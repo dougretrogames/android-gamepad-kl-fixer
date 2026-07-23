@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gamepad KL Fixer</string>
+    <string name="device_detail">Device Detail</string>
+    <string name="test_input">Test Input</string>
+    <string name="no_devices_found">No gamepad/joystick detected.\nConnect a device and tap refresh.</string>
+    <string name="refresh">Refresh</string>
+    <string name="kl_preview">Generated .kl file preview:</string>
+    <string name="axis_values">Axis Values</string>
+    <string name="key_events">Key Events (newest first)</string>
+    <string name="clear">Clear</string>
+    <string name="generate_kl">Generate KL</string>
+    <string name="test_input_btn">Test Input / Capture Keys</string>
+    <string name="check_root">Check Root Access</string>
+    <string name="save_local">Save KL (local)</string>
+    <string name="install_system">Install to /system (root)</string>
+    <string name="restore_backup">Restore Backup (root)</string>
+</resources>
