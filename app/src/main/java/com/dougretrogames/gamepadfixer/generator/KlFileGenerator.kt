@@ -2,162 +2,113 @@ package com.dougretrogames.gamepadfixer.generator
 
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.dougretrogames.gamepadfixer.model.InputDeviceInfo
+import com.dougretrogames.gamepadfixer.model.GamepadDevice
+import com.dougretrogames.gamepadfixer.model.KeyMapping
 import com.dougretrogames.gamepadfixer.model.KlFile
-import com.dougretrogames.gamepadfixer.model.KlMapping
 
 /**
- * Generates .kl key layout files based on InputDeviceInfo and captured events.
- * Provides sensible defaults for common gamepad axes and buttons.
+ * Generates .kl (KeyLayout) file content for a given [GamepadDevice].
+ *
+ * The generator combines:
+ * 1. A comprehensive set of default gamepad key/axis mappings.
+ * 2. Any additional mappings recorded by the user via [KeyEventCaptureHelper].
  */
-class KlFileGenerator {
+object KlFileGenerator {
 
     /**
-     * Generates a KlFile with default mappings derived from device diagnostics.
+     * Default key mappings used for a standard gamepad.
+     * Scan codes match the common Linux HID gamepad driver (xpad/generic-usb-hid).
      */
-    fun generateFromDevice(device: InputDeviceInfo): KlFile {
-        val klFile = KlFile(
-            fileName = device.klFileName(),
-            vendorId = device.vendorId,
-            productId = device.productId
-        )
+    val defaultKeyMappings: List<KeyMapping> = listOf(
+        // Face buttons
+        KeyMapping("304", "BUTTON_A", "WAKE"),
+        KeyMapping("305", "BUTTON_B", "WAKE"),
+        KeyMapping("307", "BUTTON_X", "WAKE"),
+        KeyMapping("308", "BUTTON_Y", "WAKE"),
+        // Shoulder buttons
+        KeyMapping("310", "BUTTON_L1", "WAKE"),
+        KeyMapping("311", "BUTTON_R1", "WAKE"),
+        KeyMapping("312", "BUTTON_L2", "WAKE"),
+        KeyMapping("313", "BUTTON_R2", "WAKE"),
+        // Thumbsticks
+        KeyMapping("317", "BUTTON_THUMBL", "WAKE"),
+        KeyMapping("318", "BUTTON_THUMBR", "WAKE"),
+        // Menu buttons
+        KeyMapping("314", "BUTTON_SELECT", "WAKE"),
+        KeyMapping("315", "BUTTON_START", "WAKE"),
+        KeyMapping("316", "BUTTON_MODE", "WAKE"),
+        // D-Pad (hat switch)
+        KeyMapping("0x10", "DPAD_UP",    isAxis = true),
+        KeyMapping("0x11", "DPAD_LEFT",  isAxis = true)
+    )
 
-        // Add key mappings for detected buttons
-        for (key in device.keys) {
-            val label = androidKeyCodeToKlLabel(key.keyCode)
-            if (label != null) {
-                // Scan codes for standard HID gamepad buttons start at 0x130
-                val scanCode = keyCodeToHidScanCode(key.keyCode)
-                klFile.mappings.add(KlMapping.KeyMapping(scanCode, label))
-            }
-        }
+    /**
+     * Default axis mappings for a standard gamepad.
+     */
+    val defaultAxisMappings: List<KeyMapping> = listOf(
+        KeyMapping("0x00", "X",     isAxis = true),
+        KeyMapping("0x01", "Y",     isAxis = true),
+        KeyMapping("0x02", "Z",     isAxis = true),
+        KeyMapping("0x05", "RZ",    isAxis = true),
+        KeyMapping("0x09", "BRAKE", isAxis = true),
+        KeyMapping("0x0c", "GAS",   isAxis = true)
+    )
 
-        // Add axis mappings for detected axes
-        for (axis in device.axes) {
-            val androidAxisLabel = motionAxisToKlLabel(axis.axisCode)
-            if (androidAxisLabel != null) {
-                klFile.mappings.add(
-                    KlMapping.AxisMapping(
-                        rawAxis = motionAxisToHidName(axis.axisCode),
-                        androidAxis = androidAxisLabel,
-                        flat = if (axis.flat > 0) axis.flat else null
-                    )
-                )
-            }
-        }
-
-        return klFile
+    /**
+     * Generates a [KlFile] for [device] merging default mappings with [customMappings].
+     *
+     * Custom mappings override defaults with the same scan code.
+     *
+     * @param device        Target gamepad device.
+     * @param customMappings Additional/override mappings from user input capture.
+     * @return [KlFile] ready to be written to disk.
+     */
+    fun generate(device: GamepadDevice, customMappings: List<KeyMapping> = emptyList()): KlFile {
+        val defaults = (defaultKeyMappings + defaultAxisMappings).associateBy { it.scanCode }.toMutableMap()
+        customMappings.forEach { defaults[it.scanCode] = it }
+        return KlFile(device = device, mappings = defaults.values.toList())
     }
 
     /**
-     * Generates a KlFile with mappings from a set of captured KeyEvents and MotionEvents.
+     * Converts a captured [KeyEvent] into a [KeyMapping] entry.
+     *
+     * @param event   The raw KeyEvent from the gamepad.
+     * @return [KeyMapping] or null if the event does not carry a scan code.
      */
-    fun generateFromCapturedEvents(
-        device: InputDeviceInfo,
-        capturedKeyCodes: Set<Int>,
-        capturedAxes: Map<Int, Float>
-    ): KlFile {
-        val klFile = KlFile(
-            fileName = device.klFileName(),
-            vendorId = device.vendorId,
-            productId = device.productId
+    fun fromKeyEvent(event: KeyEvent): KeyMapping? {
+        val scanCode = event.scanCode
+        if (scanCode == 0) return null
+        val keyName = KeyEvent.keyCodeToString(event.keyCode).removePrefix("KEYCODE_")
+        return KeyMapping(scanCode = scanCode.toString(), keyLabel = keyName, flags = "WAKE")
+    }
+
+    /**
+     * Converts a captured [MotionEvent] axis value into axis [KeyMapping] entries.
+     *
+     * Only axes with an absolute value > 0.1 are considered active.
+     *
+     * @param event  The raw MotionEvent from the gamepad.
+     * @return List of [KeyMapping] for each triggered axis.
+     */
+    fun fromMotionEvent(event: MotionEvent): List<KeyMapping> {
+        val axes = listOf(
+            MotionEvent.AXIS_X    to "X",
+            MotionEvent.AXIS_Y    to "Y",
+            MotionEvent.AXIS_Z    to "Z",
+            MotionEvent.AXIS_RZ   to "RZ",
+            MotionEvent.AXIS_LTRIGGER to "BRAKE",
+            MotionEvent.AXIS_RTRIGGER to "GAS",
+            MotionEvent.AXIS_HAT_X    to "HAT_X",
+            MotionEvent.AXIS_HAT_Y    to "HAT_Y"
         )
-
-        for (keyCode in capturedKeyCodes) {
-            val label = androidKeyCodeToKlLabel(keyCode) ?: KeyEvent.keyCodeToString(keyCode)
-            val scanCode = keyCodeToHidScanCode(keyCode)
-            klFile.mappings.add(KlMapping.KeyMapping(scanCode, label))
-        }
-
-        for ((axisCode, flatVal) in capturedAxes) {
-            val androidAxisLabel = motionAxisToKlLabel(axisCode) ?: continue
-            klFile.mappings.add(
-                KlMapping.AxisMapping(
-                    rawAxis = motionAxisToHidName(axisCode),
-                    androidAxis = androidAxisLabel,
-                    flat = if (flatVal > 0) flatVal else null
+        return axes
+            .filter { (axis, _) -> Math.abs(event.getAxisValue(axis)) > 0.1f }
+            .map { (axis, label) ->
+                KeyMapping(
+                    scanCode = "0x${axis.toString(16).padStart(2, '0')}",
+                    keyLabel = label,
+                    isAxis = true
                 )
-            )
-        }
-
-        return klFile
-    }
-
-    // --- Mapping tables ---
-
-    private fun androidKeyCodeToKlLabel(keyCode: Int): String? = when (keyCode) {
-        KeyEvent.KEYCODE_BUTTON_A -> "BUTTON_A"
-        KeyEvent.KEYCODE_BUTTON_B -> "BUTTON_B"
-        KeyEvent.KEYCODE_BUTTON_X -> "BUTTON_X"
-        KeyEvent.KEYCODE_BUTTON_Y -> "BUTTON_Y"
-        KeyEvent.KEYCODE_BUTTON_L1 -> "BUTTON_L1"
-        KeyEvent.KEYCODE_BUTTON_R1 -> "BUTTON_R1"
-        KeyEvent.KEYCODE_BUTTON_L2 -> "BUTTON_L2"
-        KeyEvent.KEYCODE_BUTTON_R2 -> "BUTTON_R2"
-        KeyEvent.KEYCODE_BUTTON_THUMBL -> "BUTTON_THUMBL"
-        KeyEvent.KEYCODE_BUTTON_THUMBR -> "BUTTON_THUMBR"
-        KeyEvent.KEYCODE_BUTTON_START -> "BUTTON_START"
-        KeyEvent.KEYCODE_BUTTON_SELECT -> "BUTTON_SELECT"
-        KeyEvent.KEYCODE_BUTTON_MODE -> "BUTTON_MODE"
-        KeyEvent.KEYCODE_DPAD_UP -> "DPAD_UP"
-        KeyEvent.KEYCODE_DPAD_DOWN -> "DPAD_DOWN"
-        KeyEvent.KEYCODE_DPAD_LEFT -> "DPAD_LEFT"
-        KeyEvent.KEYCODE_DPAD_RIGHT -> "DPAD_RIGHT"
-        KeyEvent.KEYCODE_DPAD_CENTER -> "DPAD_CENTER"
-        else -> null
-    }
-
-    private fun keyCodeToHidScanCode(keyCode: Int): Int = when (keyCode) {
-        KeyEvent.KEYCODE_BUTTON_A -> 0x130
-        KeyEvent.KEYCODE_BUTTON_B -> 0x131
-        KeyEvent.KEYCODE_BUTTON_X -> 0x133
-        KeyEvent.KEYCODE_BUTTON_Y -> 0x134
-        KeyEvent.KEYCODE_BUTTON_L1 -> 0x136
-        KeyEvent.KEYCODE_BUTTON_R1 -> 0x137
-        KeyEvent.KEYCODE_BUTTON_L2 -> 0x138
-        KeyEvent.KEYCODE_BUTTON_R2 -> 0x139
-        KeyEvent.KEYCODE_BUTTON_SELECT -> 0x13A
-        KeyEvent.KEYCODE_BUTTON_START -> 0x13B
-        KeyEvent.KEYCODE_BUTTON_THUMBL -> 0x13D
-        KeyEvent.KEYCODE_BUTTON_THUMBR -> 0x13E
-        KeyEvent.KEYCODE_BUTTON_MODE -> 0x13C
-        KeyEvent.KEYCODE_DPAD_UP -> 0x67
-        KeyEvent.KEYCODE_DPAD_DOWN -> 0x6C
-        KeyEvent.KEYCODE_DPAD_LEFT -> 0x69
-        KeyEvent.KEYCODE_DPAD_RIGHT -> 0x6A
-        KeyEvent.KEYCODE_DPAD_CENTER -> 0x160
-        else -> keyCode
-    }
-
-    private fun motionAxisToKlLabel(axisCode: Int): String? = when (axisCode) {
-        MotionEvent.AXIS_X -> "X"
-        MotionEvent.AXIS_Y -> "Y"
-        MotionEvent.AXIS_Z -> "Z"
-        MotionEvent.AXIS_RZ -> "RZ"
-        MotionEvent.AXIS_HAT_X -> "HAT_X"
-        MotionEvent.AXIS_HAT_Y -> "HAT_Y"
-        MotionEvent.AXIS_LTRIGGER -> "LTRIGGER"
-        MotionEvent.AXIS_RTRIGGER -> "RTRIGGER"
-        MotionEvent.AXIS_THROTTLE -> "THROTTLE"
-        MotionEvent.AXIS_RUDDER -> "RUDDER"
-        MotionEvent.AXIS_RX -> "RX"
-        MotionEvent.AXIS_RY -> "RY"
-        else -> null
-    }
-
-    private fun motionAxisToHidName(axisCode: Int): String = when (axisCode) {
-        MotionEvent.AXIS_X -> "ABS_X"
-        MotionEvent.AXIS_Y -> "ABS_Y"
-        MotionEvent.AXIS_Z -> "ABS_Z"
-        MotionEvent.AXIS_RZ -> "ABS_RZ"
-        MotionEvent.AXIS_HAT_X -> "ABS_HAT0X"
-        MotionEvent.AXIS_HAT_Y -> "ABS_HAT0Y"
-        MotionEvent.AXIS_LTRIGGER -> "ABS_BRAKE"
-        MotionEvent.AXIS_RTRIGGER -> "ABS_GAS"
-        MotionEvent.AXIS_THROTTLE -> "ABS_THROTTLE"
-        MotionEvent.AXIS_RUDDER -> "ABS_RUDDER"
-        MotionEvent.AXIS_RX -> "ABS_RX"
-        MotionEvent.AXIS_RY -> "ABS_RY"
-        else -> "ABS_MISC"
+            }
     }
 }
