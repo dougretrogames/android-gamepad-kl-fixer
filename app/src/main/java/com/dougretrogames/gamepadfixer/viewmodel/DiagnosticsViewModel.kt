@@ -1,41 +1,44 @@
 package com.dougretrogames.gamepadfixer.viewmodel
 
-import android.view.KeyEvent
-import android.view.MotionEvent
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dougretrogames.gamepadfixer.model.InputDeviceInfo
-import com.dougretrogames.gamepadfixer.repository.InputDeviceRepository
+import com.dougretrogames.gamepadfixer.model.GamepadDevice
+import com.dougretrogames.gamepadfixer.repository.DeviceDiagnostics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DiagnosticsViewModel(
-    private val repository: InputDeviceRepository = InputDeviceRepository()
-) : ViewModel() {
+/**
+ * ViewModel for [DiagnosticsActivity].
+ *
+ * Provides all input device details for the diagnostic screen.
+ */
+class DiagnosticsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _devices = MutableLiveData<List<InputDeviceInfo>>(emptyList())
-    val devices: LiveData<List<InputDeviceInfo>> = _devices
+    private val _allDevices = MutableLiveData<List<GamepadDevice>>(emptyList())
+    val allDevices: LiveData<List<GamepadDevice>> = _allDevices
 
-    private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
+    private val _selectedDevice = MutableLiveData<GamepadDevice?>(null)
+    val selectedDevice: LiveData<GamepadDevice?> = _selectedDevice
 
-    fun loadDevices() {
+    init {
+        loadAllDevices()
+    }
+
+    fun loadAllDevices() {
         viewModelScope.launch(Dispatchers.IO) {
-            _loading.postValue(true)
-            val deviceList = repository.getAllDevices()
-            _devices.postValue(deviceList)
-            _loading.postValue(false)
+            _allDevices.postValue(DeviceDiagnostics.getAllInputDevices())
         }
     }
 
-    fun loadGamepadDevices() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _loading.postValue(true)
-            val deviceList = repository.getGamepadDevices()
-            _devices.postValue(deviceList)
-            _loading.postValue(false)
-        }
+    fun selectDevice(device: GamepadDevice) {
+        _selectedDevice.value = device
+    }
+
+    fun describeSelectedSources(): String {
+        val device = _selectedDevice.value ?: return ""
+        return DeviceDiagnostics.describeSources(device.sources)
     }
 }
