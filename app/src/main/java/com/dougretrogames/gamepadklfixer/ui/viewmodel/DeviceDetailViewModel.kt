@@ -6,9 +6,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.kl.KlFileGenerator
 import com.dougretrogames.gamepadklfixer.kl.KlFileStorage
 import com.dougretrogames.gamepadklfixer.model.GamepadDevice
+import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
 import com.dougretrogames.gamepadklfixer.root.RootManager
 import kotlinx.coroutines.launch
 
@@ -50,14 +52,21 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         _klPreview.value = content
     }
 
+    fun generatePreviewWithCapturedKeys(capturedKeys: List<KeyEventRecord>) {
+        val dev = _device.value ?: return
+        val content = KlFileGenerator.generateFromCapture(dev, capturedKeys)
+        _klPreview.value = content
+        _statusMessage.value = getApplication<Application>().getString(R.string.kl_updated_count, capturedKeys.size)
+    }
+
     fun checkRoot() {
         viewModelScope.launch {
             val result = RootManager.checkRootAccess()
             _isRooted.value = result.success && result.output.contains("uid=0")
             _statusMessage.value = if (_isRooted.value == true)
-                "✅ Root access confirmed"
+                getApplication<Application>().getString(R.string.root_access_confirmed)
             else
-                "❌ Root not available: ${result.error.ifEmpty { result.output }}"
+                getApplication<Application>().getString(R.string.root_not_available, result.error.ifEmpty { result.output })
         }
     }
 
@@ -67,9 +76,9 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             try {
                 val file = KlFileStorage.saveKlFile(getApplication(), dev, content)
-                _statusMessage.value = "✅ Saved to app storage: ${file.name}"
+                _statusMessage.value = getApplication<Application>().getString(R.string.saved_to_storage, file.name)
             } catch (e: Exception) {
-                _statusMessage.value = "❌ Save failed: ${e.message}"
+                _statusMessage.value = getApplication<Application>().getString(R.string.save_failed, e.message)
             }
         }
     }
@@ -85,12 +94,12 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
                 // Install
                 val installResult = RootManager.installKlFile(file, dev.klFileName)
                 _statusMessage.value = if (installResult.success) {
-                    "✅ Installed: ${dev.klFileName}\nBackup: ${backupResult.output}"
+                    getApplication<Application>().getString(R.string.installed_success, dev.klFileName, backupResult.output)
                 } else {
-                    "❌ Install failed: ${installResult.error}"
+                    getApplication<Application>().getString(R.string.install_failed, installResult.error)
                 }
             } catch (e: Exception) {
-                _statusMessage.value = "❌ Error: ${e.message}"
+                _statusMessage.value = getApplication<Application>().getString(R.string.error_generic, e.message)
             }
         }
     }
@@ -100,9 +109,9 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             val result = RootManager.restoreKlFile(dev.klFileName)
             _statusMessage.value = if (result.success) {
-                "✅ Restored: ${dev.klFileName}"
+                getApplication<Application>().getString(R.string.restored_success, dev.klFileName)
             } else {
-                "❌ Restore failed: ${result.error.ifEmpty { result.output }}"
+                getApplication<Application>().getString(R.string.restore_failed, result.error.ifEmpty { result.output })
             }
         }
     }

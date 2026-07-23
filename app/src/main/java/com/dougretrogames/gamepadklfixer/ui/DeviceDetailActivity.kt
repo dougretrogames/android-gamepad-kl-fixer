@@ -3,8 +3,10 @@ package com.dougretrogames.gamepadklfixer.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.databinding.ActivityDeviceDetailBinding
 import com.dougretrogames.gamepadklfixer.device.DeviceScanner
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.DeviceDetailViewModel
@@ -17,6 +19,20 @@ class DeviceDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDeviceDetailBinding
     private val viewModel: DeviceDetailViewModel by viewModels()
+
+    private val testInputLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val capturedKeys = data?.getParcelableArrayListExtra<com.dougretrogames.gamepadklfixer.model.KeyEventRecord>(
+                TestInputActivity.EXTRA_CAPTURED_KEYS
+            )
+            if (capturedKeys != null) {
+                viewModel.generatePreviewWithCapturedKeys(capturedKeys)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +50,11 @@ class DeviceDetailActivity : AppCompatActivity() {
             if (device == null) return@observe
             supportActionBar?.title = device.name
             binding.tvDeviceName.text = device.name
-            binding.tvVendorId.text = "Vendor ID: 0x${device.vendorHex} (${device.vendorId})"
-            binding.tvProductId.text = "Product ID: 0x${device.productHex} (${device.productId})"
-            binding.tvKlFilename.text = "KL File: ${device.klFileName}"
-            binding.tvSources.text = "Sources: ${DeviceScanner.sourcesDescription(device.sources)}"
-            binding.tvDescriptor.text = "Descriptor: ${device.descriptor}"
+            binding.tvVendorId.text = getString(R.string.vendor_id_label, device.vendorHex, device.vendorId)
+            binding.tvProductId.text = getString(R.string.product_id_label, device.productHex, device.productId)
+            binding.tvKlFilename.text = getString(R.string.kl_file_label, device.klFileName)
+            binding.tvSources.text = getString(R.string.sources_label, DeviceScanner.sourcesDescription(device.sources))
+            binding.tvDescriptor.text = getString(R.string.descriptor_label, device.descriptor)
         }
 
         viewModel.klPreview.observe(this) { content ->
@@ -60,10 +76,9 @@ class DeviceDetailActivity : AppCompatActivity() {
         binding.btnInstall.setOnClickListener { viewModel.installKlFile() }
         binding.btnRestore.setOnClickListener { viewModel.restoreKlFile() }
         binding.btnTestInput.setOnClickListener {
-            startActivity(
-                Intent(this, TestInputActivity::class.java)
-                    .putExtra(EXTRA_DEVICE_ID, deviceId)
-            )
+            val intent = Intent(this, TestInputActivity::class.java)
+                .putExtra(EXTRA_DEVICE_ID, deviceId)
+            testInputLauncher.launch(intent)
         }
     }
 

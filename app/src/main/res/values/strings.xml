@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gamepad KL Fixer</string>
     <string name="device_detail">Device Detail</string>
@@ -15,4 +14,21 @@
     <string name="save_local">Save KL (local)</string>
     <string name="install_system">Install to /system (root)</string>
     <string name="restore_backup">Restore Backup (root)</string>
+    <string name="vendor_id_label">Vendor ID: 0x%1$s (%2$d)</string>
+    <string name="product_id_label">Product ID: 0x%1$s (%2$d)</string>
+    <string name="kl_file_label">KL File: %s</string>
+    <string name="sources_label">Sources: %s</string>
+    <string name="descriptor_label">Descriptor: %s</string>
+    <string name="root_access_confirmed">✅ Root access confirmed</string>
+    <string name="root_not_available">❌ Root not available: %s</string>
+    <string name="saved_to_storage">✅ Saved to app storage: %s</string>
+    <string name="save_failed">❌ Save failed: %s</string>
+    <string name="installed_success">✅ Installed: %1$s\nBackup: %2$s</string>
+    <string name="install_failed">❌ Install failed: %s</string>
+    <string name="error_generic">❌ Error: %s</string>
+    <string name="restored_success">✅ Restored: %s</string>
+    <string name="restore_failed">❌ Restore failed: %s</string>
+    <string name="kl_updated_count">✨ KL updated with %d captured events</string>
+    <string name="no_axis_movement">No axis movement detected</string>
+    <string name="no_events_captured">No events captured yet</string>
 </resources>

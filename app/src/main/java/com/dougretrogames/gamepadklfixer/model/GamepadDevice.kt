@@ -1,5 +1,8 @@
 package com.dougretrogames.gamepadklfixer.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Represents a detected input device (gamepad/joystick).
  *
@@ -10,6 +13,7 @@ package com.dougretrogames.gamepadklfixer.model
  * @param sources   Bitmask of InputDevice.SOURCE_* flags
  * @param descriptor Unique descriptor string from InputDevice
  */
+@Parcelize
 data class GamepadDevice(
     val id: Int,
     val name: String,
@@ -17,7 +21,7 @@ data class GamepadDevice(
     val productId: Int,
     val sources: Int,
     val descriptor: String
-) {
+) : Parcelable {
     /** Vendor ID formatted as 4-digit hex uppercase, e.g. "045E" */
     val vendorHex: String get() = "%04X".format(vendorId)
 

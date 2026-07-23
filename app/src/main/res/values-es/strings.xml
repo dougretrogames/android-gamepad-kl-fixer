@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Gamepad KL Fixer</string>
+    <string name="device_detail">Detalle del Dispositivo</string>
+    <string name="test_input">Probar Entrada</string>
+    <string name="no_devices_found">No se detectó ningún mando/joystick.\nConecta un dispositivo y toca actualizar.</string>
+    <string name="refresh">Actualizar</string>
+    <string name="kl_preview">Vista previa del archivo .kl generado:</string>
+    <string name="axis_values">Valores de los Ejes</string>
+    <string name="key_events">Eventos de Tecla (más recientes primero)</string>
+    <string name="clear">Limpar</string>
+    <string name="generate_kl">Generar KL</string>
+    <string name="test_input_btn">Probar Entrada / Capturar Teclas</string>
+    <string name="check_root">Verificar Acceso Root</string>
+    <string name="save_local">Guardar KL (local)</string>
+    <string name="install_system">Instalar en /system (root)</string>
+    <string name="restore_backup">Restaurar Copia de Seguridad (root)</string>
+    <string name="vendor_id_label">ID del Fabricante: 0x%1$s (%2$d)</string>
+    <string name="product_id_label">ID del Producto: 0x%1$s (%2$d)</string>
+    <string name="kl_file_label">Archivo KL: %s</string>
+    <string name="sources_label">Fuentes: %s</string>
+    <string name="descriptor_label">Descriptor: %s</string>
+    <string name="root_access_confirmed">✅ Acceso root confirmado</string>
+    <string name="root_not_available">❌ Root no disponible: %s</string>
+    <string name="saved_to_storage">✅ Guardado en el almacenamiento de la app: %s</string>
+    <string name="save_failed">❌ Error al guardar: %s</string>
+    <string name="installed_success">✅ Instalado: %1$s\nCopia de Seguridad: %2$s</string>
+    <string name="install_failed">❌ Error en la instalación: %s</string>
+    <string name="error_generic">❌ Error: %s</string>
+    <string name="restored_success">✅ Restaurado: %s</string>
+    <string name="restore_failed">❌ Error en la restauración: %s</string>
+    <string name="kl_updated_count">✨ KL actualizado con %d eventos capturados</string>
+    <string name="no_axis_movement">No se detectó movimiento de los ejes</string>
+    <string name="no_events_captured">Aún no se han capturado eventos</string>
+</resources>

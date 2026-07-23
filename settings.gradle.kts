@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "GamepadKLFixer"
+rootProject.name = "android-gamepad-kl-fixer"
 include(":app")

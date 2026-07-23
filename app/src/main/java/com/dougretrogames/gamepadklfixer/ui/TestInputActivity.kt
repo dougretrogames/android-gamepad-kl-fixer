@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.databinding.ActivityTestInputBinding
 import com.dougretrogames.gamepadklfixer.ui.adapter.KeyEventAdapter
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.TestInputViewModel
@@ -45,7 +46,7 @@ class TestInputActivity : AppCompatActivity() {
             axes.forEach { (axis, value) ->
                 sb.appendLine("${android.view.MotionEvent.axisToString(axis)}: ${"%+.3f".format(value)}")
             }
-            binding.tvAxisValues.text = if (sb.isEmpty()) "No axis movement detected" else sb.toString()
+            binding.tvAxisValues.text = if (sb.isEmpty()) getString(R.string.no_axis_movement) else sb.toString()
         }
 
         binding.btnClear.setOnClickListener { viewModel.clear() }
@@ -81,16 +82,20 @@ class TestInputActivity : AppCompatActivity() {
 
     private fun generateKlFromCapture() {
         val captured = viewModel.getCapturedKeys()
-        val resultIntent = Intent().apply {
-            putExtra("captured_key_count", captured.size)
+        if (captured.isEmpty()) {
+            android.widget.Toast.makeText(this, R.string.no_events_captured, android.widget.Toast.LENGTH_SHORT).show()
+            return
         }
-        // Pass back to DeviceDetailActivity via shared ViewModel or Intent
-        // For now, show a toast with the count
-        android.widget.Toast.makeText(
-            this,
-            "Captured ${captured.size} key events. Go back to generate KL.",
-            android.widget.Toast.LENGTH_LONG
-        ).show()
+
+        val resultIntent = Intent().apply {
+            putParcelableArrayListExtra(EXTRA_CAPTURED_KEYS, ArrayList(captured))
+        }
+        setResult(RESULT_OK, resultIntent)
+        finish()
+    }
+
+    companion object {
+        const val EXTRA_CAPTURED_KEYS = "extra_captured_keys"
     }
 
     override fun onSupportNavigateUp(): Boolean {

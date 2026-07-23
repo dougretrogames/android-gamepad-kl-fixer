@@ -1,13 +1,12 @@
-name: Android Release APK
+name: Android CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  build-release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,24 +14,43 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
-          cache: gradle
+          cache: 'gradle'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Grant execute permission to Gradle
-        run: chmod +x ./gradlew
+      - name: Ensure Gradle Wrapper jar exists
+        run: |
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            gradle wrapper
+          fi
 
-      - name: Build release APK
-        run: ./gradlew --no-daemon assembleRelease
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
 
-      - name: Upload release APK
+      - name: Decode Keystore
+        id: decode_keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release.jks
+          echo "keystore_path=$(pwd)/release.jks" >> $GITHUB_ENV
+
+      - name: Run Unit Tests
+        run: ./gradlew test
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+        env:
+          KEYSTORE_FILE: ${{ env.keystore_path }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
+          name: app-release
           path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
