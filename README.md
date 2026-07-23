@@ -1,52 +1,238 @@
-# Android Gamepad KeyLayout Fixer
+# 🎮 Android Gamepad KL Fixer
+
+[![minSdk](https://img.shields.io/badge/minSdk-21%20(Android%205.0)-brightgreen)](#)
+[![Kotlin](https://img.shields.io/badge/language-Kotlin-blue)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A Kotlin Android application to **diagnose, generate, and install `.kl` (KeyLayout) files** for USB gamepads and joysticks. Requires **root access** to install files into `/system/usr/keylayout/`.
+
+---
+
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Screens](#screens)
+- [KL File Format](#kl-file-format)
+- [Root Operations](#root-operations)
+- [Requirements](#requirements)
+- [Build Instructions](#build-instructions)
+- [Running Tests](#running-tests)
+- [Project Structure](#project-structure)
+- [License](#license)
+
+---
 
 ## Overview
-The Android Gamepad KeyLayout Fixer is a utility designed to address issues related to gamepad compatibility in Android systems. This project enables users to configure and customize their gamepad layouts to ensure seamless gameplay experience.
+
+Android maps gamepad inputs using KeyLayout (`.kl`) files stored at:
+```
+/system/usr/keylayout/Vendor_XXXX_Product_XXXX.kl
+```
+When a gamepad has incorrect or missing mappings, buttons may be swapped, unresponsive, or report wrong keycodes. This app:
+
+1. **Detects** all connected gamepads via `InputDevice` API, extracting Vendor ID and Product ID
+2. **Captures** live `KeyEvent` and `MotionEvent` data from the physical device
+3. **Generates** a syntactically correct `.kl` file from the captured data
+4. **Installs** the file to `/system/usr/keylayout/` using root (`su`) — with automatic backup/restore
+
+---
 
 ## Features
-- **Custom Key Mapping**: Remap gamepad keys to suit user preferences.
-- **Support for Multiple Gamepads**: Compatible with various gamepad models.
-- **User-Friendly Interface**: Simple setup with an intuitive UI.
-- **Real-Time Feedback**: Instant updates as configurations are changed.
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/dougretrogames/android-gamepad-kl-fixer.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd android-gamepad-kl-fixer
-   ```
-3. Build and install the APK on your Android device.
+| Feature | Description |
+|---|---|
+| 🔍 Device Scanning | Lists all connected `SOURCE_GAMEPAD` and `SOURCE_JOYSTICK` devices |
+| 🪪 Device Diagnostics | Shows Name, Vendor ID (hex/decimal), Product ID, descriptor, sources bitmask |
+| ⌨️ KeyEvent Capture | Captures `keyCode`, `scanCode`, action (DOWN/UP), device ID in real time |
+| 🕹️ MotionEvent Capture | Shows all axis values (X, Y, Z, RZ, HAT, triggers, etc.) live |
+| 📄 KL Generation | Generates `Vendor_XXXX_Product_XXXX.kl` from default mappings or captured events |
+| 💾 Local Save | Saves generated `.kl` to app private storage (`filesDir/keylayout/`) |
+| 🔐 Root Check | Verifies `su` availability via `id` command (uid=0) |
+| ⬆️ System Install | Remounts `/system` rw, copies file, sets permissions `644 root:root`, remounts ro |
+| 🔄 Backup & Restore | Backs up existing `.kl` as `.kl.bak` before overwriting, one-tap restore |
 
-## Usage
-- Connect your gamepad to the Android device.
-- Open the Gamepad KeyLayout Fixer application.
-- Follow the on-screen instructions to configure your gamepad layout.
-- Save your settings and start gaming!
+---
 
 ## Architecture
-The project is built using Android SDK with a modular architecture that separates different functionalities into components, ensuring maintainability and scalability.
 
-## Permissions
-- **USB Permissions**: Required to interact with the gamepad hardware.
-- **Network Access**: For online updates and check for new features.
+The project follows **MVVM** with a clean separation of concerns:
 
-## CI/CD
-Continuous Integration and Continuous Deployment are set up using GitHub Actions. Each push to the main branch triggers automated testing and deployment pipelines.
+```
+app/
+├── model/           # Data classes: GamepadDevice, KeyEventRecord, MotionEventRecord
+├── device/          # DeviceScanner   — wraps InputDevice API
+├── kl/              # KlFileGenerator — generates .kl content
+│                    # KlFileStorage   — saves/loads .kl from private storage
+├── root/            # RootManager     — all su operations (check, backup, install, restore)
+└── ui/
+    ├── MainActivity         → device list (RecyclerView + FAB)
+    ├── DeviceDetailActivity → diagnostics + KL preview + action buttons
+    ├── TestInputActivity    → live KeyEvent/MotionEvent capture
+    ├── adapter/             → RecyclerView adapters (DeviceAdapter, KeyEventAdapter)
+    └── viewmodel/           → DeviceListViewModel, DeviceDetailViewModel, TestInputViewModel
+```
 
-## Error Handling
-The application includes comprehensive error handling mechanisms to ensure that any potential issues are logged and reported to the user, enhancing the user experience.
+All I/O-bound operations (root commands, file writes) run on `Dispatchers.IO` via coroutines.
 
-## Development Guide
-1. Follow coding standards for Android development.
-2. Ensure to write unit tests for each module.
-3. Submit pull requests for code reviews and integration.
+---
+
+## Screens
+
+### 1. Main Screen — Device List
+- Shows all connected gamepads with name, Vendor/Product IDs, and expected KL filename
+- FAB and menu item to rescan devices
+- Empty state message when no device is connected
+
+### 2. Device Detail
+- Full diagnostics: name, Vendor ID (0x045E / 1118), Product ID, descriptor, sources
+- Live preview of the generated `.kl` file (monospace scrollable)
+- Buttons:
+  - **Test Input** → opens capture screen
+  - **Check Root** → verifies su access
+  - **Save KL (local)** → saves to app storage
+  - **Install to /system** → root install (enabled only after root confirmed)
+  - **Restore Backup** → restores `.kl.bak` (enabled only after root confirmed)
+
+### 3. Test Input
+- Connect your gamepad and press buttons/move sticks
+- Axis values displayed live (X, Y, Z, RZ, HAT_X, HAT_Y, LTRIGGER, RTRIGGER, etc.)
+- Key event log shows keyCode name, scanCode, and action (UP/DOWN) for each press
+- **Generate KL** uses captured events to produce a more accurate mapping
+
+---
+
+## KL File Format
+
+```
+# KeyLayout file generated by GamepadKLFixer
+# Device: Xbox Wireless Controller
+# Vendor ID : 045E (1118)
+# Product ID: 028E (654)
+
+# ----- Key Mappings -----
+key 0x130   BUTTON_A   WAKE
+key 0x131   BUTTON_B   WAKE
+key 0x133   BUTTON_X   WAKE
+key 0x134   BUTTON_Y   WAKE
+key 0x136   BUTTON_L1  WAKE
+key 0x137   BUTTON_R1  WAKE
+key 0x13a   BUTTON_SELECT WAKE
+key 0x13b   BUTTON_START  WAKE
+key 0x13d   BUTTON_THUMBL WAKE
+key 0x13e   BUTTON_THUMBR WAKE
+
+# ----- Axis Mappings -----
+axis ABS_X        X
+axis ABS_Y        Y
+axis ABS_Z        Z
+axis ABS_RZ       RZ
+axis ABS_HAT0X    HAT_X
+axis ABS_HAT0Y    HAT_Y
+axis ABS_BRAKE    LTRIGGER
+axis ABS_GAS      RTRIGGER
+```
+
+Reference: [Android Key Layout Files](https://source.android.com/docs/core/interaction/input/key-layout-files)
+
+---
+
+## Root Operations
+
+> ⚠️ Root operations only work on **rooted devices** with a superuser binary (`su`) available.
+
+| Operation | Command executed (as root) |
+|---|---|
+| Check root | `id` (checks for `uid=0`) |
+| List KL files | `ls -la /system/usr/keylayout/*.kl` |
+| Backup | `cp Vendor_X.kl Vendor_X.kl.bak` |
+| Install | `mount -o remount,rw /system` → `cp` → `chmod 644` → `chown root:root` → `mount -o remount,ro /system` |
+| Restore | `mount rw` → `cp .bak` → `mount ro` |
+| Remove | `mount rw` → `rm -f` → `mount ro` |
+
+All commands are piped to a single `su` process to minimize prompt dialogs.
+
+---
+
+## Requirements
+
+- Android **5.0+** (minSdk 21)
+- Kotlin 1.9.x
+- Android Gradle Plugin 8.4.x
+- Gradle 8.7
+- **Root access required** for system install/restore operations
+- USB or Bluetooth gamepad / joystick for device detection
+
+---
+
+## Build Instructions
+
+```bash
+git clone https://github.com/dougretrogames/android-gamepad-kl-fixer.git
+cd android-gamepad-kl-fixer
+
+# Debug build
+./gradlew assembleDebug
+
+# Install on connected device
+./gradlew installDebug
+
+# Release build
+./gradlew assembleRelease
+```
+
+The APK will be at `app/build/outputs/apk/debug/app-debug.apk`.
+
+---
+
+## Running Tests
+
+```bash
+# Unit tests (JVM, no device needed)
+./gradlew test
+
+# Instrumented tests (requires connected device/emulator)
+./gradlew connectedAndroidTest
+```
+
+Unit tests cover:
+- `KlFileGeneratorTest` — content generation, validation, hex formatting
+- `GamepadDeviceTest` — data model correctness, KL filename format
+- `KeyEventRecordTest` — action name mapping
+- `RootManagerTest` — constants and result data class
+
+---
+
+## Project Structure
+
+```
+android-gamepad-kl-fixer/
+├── app/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/dougretrogames/gamepadklfixer/
+│   │   │   │   ├── model/          GamepadDevice, KeyEventRecord, MotionEventRecord
+│   │   │   │   ├── device/         DeviceScanner
+│   │   │   │   ├── kl/             KlFileGenerator, KlFileStorage
+│   │   │   │   ├── root/           RootManager
+│   │   │   │   └── ui/             Activities, Adapters, ViewModels
+│   │   │   ├── res/
+│   │   │   │   ├── layout/         XML layouts for all screens and list items
+│   │   │   │   ├── menu/           menu_main.xml
+│   │   │   │   └── values/         strings, colors, themes
+│   │   │   └── AndroidManifest.xml
+│   │   └── test/                   JVM unit tests
+│   └── build.gradle.kts
+├── gradle/
+│   ├── libs.versions.toml          Version catalog
+│   └── wrapper/gradle-wrapper.properties
+├── build.gradle.kts
+├── settings.gradle.kts
+└── README.md
+```
+
+---
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for specifics.
 
-## Contribution Guidelines
-- Contributions are welcome! Please submit an issue for discussion before making a pull request. Ensure your code adheres to existing style and architecture patterns.
-- Provide clear commit messages and reference associated issues when applicable.
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
