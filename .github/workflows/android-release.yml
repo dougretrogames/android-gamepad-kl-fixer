@@ -23,16 +23,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: wrapper
-
-      - name: Ensure Gradle Wrapper jar exists
-        run: |
-          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            gradle wrapper
-          fi
-
-      - name: Grant execute permission to gradlew
-        run: chmod +x gradlew
+          gradle-version: 8.14.5
 
       - name: Decode Keystore
         id: decode_keystore
