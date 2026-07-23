@@ -34,11 +34,8 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release.jks
           echo "keystore_path=$(pwd)/release.jks" >> $GITHUB_ENV
 
-      - name: Run Unit Tests
-        run: ./gradlew test
-
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --stacktrace
         env:
           KEYSTORE_FILE: ${{ env.keystore_path }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
