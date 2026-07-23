@@ -6,9 +6,11 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.databinding.ActivityDeviceDetailBinding
 import com.dougretrogames.gamepadklfixer.device.DeviceScanner
+import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.DeviceDetailViewModel
 
 class DeviceDetailActivity : AppCompatActivity() {
@@ -25,11 +27,15 @@ class DeviceDetailActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val data = result.data
-            val capturedKeys = data?.getParcelableArrayListExtra<com.dougretrogames.gamepadklfixer.model.KeyEventRecord>(
-                TestInputActivity.EXTRA_CAPTURED_KEYS
-            )
-            if (capturedKeys != null) {
-                viewModel.generatePreviewWithCapturedKeys(capturedKeys)
+            if (data != null) {
+                val capturedKeys = IntentCompat.getParcelableArrayListExtra(
+                    data,
+                    TestInputActivity.EXTRA_CAPTURED_KEYS,
+                    KeyEventRecord::class.java
+                )
+                if (capturedKeys != null) {
+                    viewModel.generatePreviewWithCapturedKeys(capturedKeys)
+                }
             }
         }
     }

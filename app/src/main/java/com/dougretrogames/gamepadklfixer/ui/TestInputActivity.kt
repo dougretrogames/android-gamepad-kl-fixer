@@ -9,9 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.databinding.ActivityTestInputBinding
+import com.dougretrogames.gamepadklfixer.device.DeviceScanner
+import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
 import com.dougretrogames.gamepadklfixer.ui.adapter.KeyEventAdapter
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.TestInputViewModel
-import com.dougretrogames.gamepadklfixer.device.DeviceScanner
 import android.view.InputDevice
 
 class TestInputActivity : AppCompatActivity() {
