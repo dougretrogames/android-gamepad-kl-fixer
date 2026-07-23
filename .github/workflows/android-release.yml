@@ -23,9 +23,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.14.5
-
-      - name: Grant execute permission to gradlew
-        run: chmod +x gradlew
+          cache-disabled: true
 
       - name: Decode Keystore
         id: decode_keystore
@@ -37,7 +35,7 @@ jobs:
         run: |
           unset JAVA_TOOL_OPTIONS
           unset GRADLE_OPTS
-          ./gradlew assembleRelease --stacktrace
+          gradle assembleRelease --stacktrace
         env:
           KEYSTORE_FILE: ${{ env.keystore_path }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
