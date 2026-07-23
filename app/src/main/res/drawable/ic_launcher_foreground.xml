@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Gamepad Silhouette -->
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M30,40 h48 a10,10 0 0 1 10,10 v20 a10,10 0 0 1 -10,10 h-48 a10,10 0 0 1 -10,-10 v-20 a10,10 0 0 1 10,-10 Z" />
+    <!-- D-Pad -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,55 h4 v-4 h2 v4 h4 v2 h-4 v4 h-2 v-4 h-4 z" />
+    <!-- Buttons -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,53 a2,2 0 1 1 0.001,0 Z M70,57 a2,2 0 1 1 0.001,0 Z M66,61 a2,2 0 1 1 0.001,0 Z M62,57 a2,2 0 1 1 0.001,0 Z" />
+    <!-- Fixer Wrench -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,75 l4,4 l-2,2 l-4,-4 l-1,1 l4,4 l-2,2 l-4,-4 l-2,2 l-2,-2 z" />
+</vector>
