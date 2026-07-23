@@ -1,129 +1,116 @@
 package com.dougretrogames.gamepadfixer.root
 
-import com.dougretrogames.gamepadfixer.model.RootResult
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import android.content.Context
+import com.dougretrogames.gamepadfixer.model.RootOperationResult
+import java.io.File
 
 /**
- * Handles all root-privileged shell operations:
- * - Checking su availability
- * - Installing .kl files to /system/usr/keylayout/
- * - Backing up existing .kl files
- * - Restoring backups
+ * High-level root operations for .kl file management.
+ *
+ * All public methods are suspend-friendly (blocking) — call from IO dispatcher.
  */
-class RootManager {
+class RootManager(private val context: Context) {
 
     companion object {
-        const val KL_SYSTEM_PATH = "/system/usr/keylayout/"
-        const val BACKUP_SUFFIX = ".bak"
+        private const val KL_SYSTEM_DIR = "/system/usr/keylayout"
+        private const val KL_BACKUP_DIR = "/sdcard/GamepadKlFixer/backup"
+    }
+
+    /** @return true if `su` is available on this device. */
+    fun isRooted(): Boolean = RootShell.isRooted()
+
+    /**
+     * Copies a .kl file from internal storage to the system keylayout directory.
+     *
+     * Steps performed:
+     * 1. mount -o remount,rw /system
+     * 2. cp <src> /system/usr/keylayout/<filename>
+     * 3. chmod 644 <destination>
+     * 4. mount -o remount,ro /system
+     *
+     * @param localFile  File in app's internal storage ready to be installed.
+     * @param klFileName Destination filename, e.g. "Vendor_045E_Product_028E.kl"
+     */
+    fun installKlFile(localFile: File, klFileName: String): RootOperationResult {
+        val dest = "$KL_SYSTEM_DIR/$klFileName"
+        val src = localFile.absolutePath
+        val commands = listOf(
+            "mount -o remount,rw /system 2>/dev/null || true",
+            "cp '$src' '$dest'",
+            "chmod 644 '$dest'",
+            "chown root:root '$dest'",
+            "mount -o remount,ro /system 2>/dev/null || true"
+        )
+        return RootShell.execute(commands)
     }
 
     /**
-     * Checks whether the device has root access (su binary available).
+     * Backs up the existing .kl file from /system to /sdcard/GamepadKlFixer/backup/.
+     *
+     * @param klFileName Filename to back up.
      */
-    fun checkRoot(): Boolean {
+    fun backupKlFile(klFileName: String): RootOperationResult {
+        val src = "$KL_SYSTEM_DIR/$klFileName"
+        val backupPath = "$KL_BACKUP_DIR/$klFileName"
+        val commands = listOf(
+            "mkdir -p '$KL_BACKUP_DIR'",
+            "[ -f '$src' ] && cp '$src' '$backupPath' || echo 'no_original'"
+        )
+        return RootShell.execute(commands)
+    }
+
+    /**
+     * Restores a previously backed-up .kl file back to /system.
+     *
+     * @param klFileName Filename to restore.
+     */
+    fun restoreKlFile(klFileName: String): RootOperationResult {
+        val backupPath = "$KL_BACKUP_DIR/$klFileName"
+        val dest = "$KL_SYSTEM_DIR/$klFileName"
+        val commands = listOf(
+            "[ -f '$backupPath' ] || { echo 'backup_not_found'; exit 1; }",
+            "mount -o remount,rw /system 2>/dev/null || true",
+            "cp '$backupPath' '$dest'",
+            "chmod 644 '$dest'",
+            "chown root:root '$dest'",
+            "mount -o remount,ro /system 2>/dev/null || true"
+        )
+        return RootShell.execute(commands)
+    }
+
+    /**
+     * Lists all .kl files present in /system/usr/keylayout.
+     *
+     * @return Success with newline-separated filenames, or Failure/NoRoot.
+     */
+    fun listSystemKlFiles(): RootOperationResult {
+        return RootShell.execute("ls '$KL_SYSTEM_DIR'/*.kl 2>/dev/null || echo 'none'")
+    }
+
+    /**
+     * Reads a .kl file from /system and returns its content as a string.
+     *
+     * @param klFileName Filename to read.
+     */
+    fun readSystemKlFile(klFileName: String): RootOperationResult {
+        val path = "$KL_SYSTEM_DIR/$klFileName"
+        return RootShell.execute("cat '$path'")
+    }
+
+    /**
+     * Writes content directly to a .kl file in /system.
+     * Content is written via a temp file in the app's cache dir.
+     *
+     * @param klFileName Filename to write.
+     * @param content    Text content for the .kl file.
+     */
+    fun writeSystemKlFile(klFileName: String, content: String): RootOperationResult {
+        val tmpFile = File(context.cacheDir, klFileName)
         return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
-            val output = proc.inputStream.bufferedReader().readText()
-            proc.waitFor()
-            output.contains("uid=0")
-        } catch (e: Exception) {
-            false
+            tmpFile.writeText(content)
+            installKlFile(tmpFile, klFileName)
+        } finally {
+            tmpFile.delete()
         }
-    }
-
-    /**
-     * Executes a shell command with root privileges.
-     * Returns RootResult with stdout output or error.
-     */
-    fun execRoot(command: String): RootResult<String> {
-        return try {
-            val proc = Runtime.getRuntime().exec("su")
-            val writer = OutputStreamWriter(proc.outputStream)
-            writer.write("$command\n")
-            writer.write("exit\n")
-            writer.flush()
-            writer.close()
-
-            val stdout = BufferedReader(InputStreamReader(proc.inputStream)).readText()
-            val stderr = BufferedReader(InputStreamReader(proc.errorStream)).readText()
-            val exitCode = proc.waitFor()
-
-            if (exitCode == 0) {
-                RootResult.Success(stdout.trim(), stdout.trim())
-            } else {
-                RootResult.Error(stderr.trim().ifEmpty { "Command failed with exit code $exitCode" })
-            }
-        } catch (e: Exception) {
-            RootResult.Error(e.message ?: "Unknown error", e)
-        }
-    }
-
-    /**
-     * Backs up an existing .kl file in the system partition before replacing.
-     * Creates a .bak copy next to the original file.
-     */
-    fun backupKlFile(fileName: String): RootResult<String> {
-        val src = "$KL_SYSTEM_PATH$fileName"
-        val dst = "$KL_SYSTEM_PATH${fileName}$BACKUP_SUFFIX"
-        // Check if file exists first
-        val checkResult = execRoot("[ -f '$src' ] && echo EXISTS || echo MISSING")
-        if (checkResult is RootResult.Success && checkResult.data == "MISSING") {
-            return RootResult.Success("No existing file to backup")
-        }
-        return execRoot("cp '$src' '$dst' && echo OK")
-    }
-
-    /**
-     * Installs a .kl file from app's private storage to the system partition.
-     * Remounts /system as rw before writing and ro afterwards.
-     */
-    fun installKlFile(srcPath: String, fileName: String): RootResult<String> {
-        val dst = "$KL_SYSTEM_PATH$fileName"
-        val commands = """
-            mount -o remount,rw /system
-            cp '$srcPath' '$dst'
-            chmod 644 '$dst'
-            chown root:root '$dst'
-            mount -o remount,ro /system
-            echo OK
-        """.trimIndent()
-        return execRoot(commands)
-    }
-
-    /**
-     * Restores a previously backed up .kl file.
-     */
-    fun restoreBackup(fileName: String): RootResult<String> {
-        val backup = "$KL_SYSTEM_PATH${fileName}$BACKUP_SUFFIX"
-        val original = "$KL_SYSTEM_PATH$fileName"
-        val commands = """
-            mount -o remount,rw /system
-            [ -f '$backup' ] && cp '$backup' '$original' && echo RESTORED || echo NO_BACKUP
-            mount -o remount,ro /system
-        """.trimIndent()
-        return execRoot(commands)
-    }
-
-    /**
-     * Lists all .kl files currently installed in the system keylayout directory.
-     */
-    fun listSystemKlFiles(): RootResult<List<String>> {
-        return when (val result = execRoot("ls $KL_SYSTEM_PATH*.kl 2>/dev/null")) {
-            is RootResult.Success -> {
-                val files = result.data.lines().filter { it.isNotBlank() }
-                RootResult.Success(files)
-            }
-            is RootResult.Error -> result
-            RootResult.NoRoot -> RootResult.NoRoot
-        }
-    }
-
-    /**
-     * Reads the content of an installed .kl file from the system partition.
-     */
-    fun readSystemKlFile(fileName: String): RootResult<String> {
-        return execRoot("cat $KL_SYSTEM_PATH$fileName")
     }
 }
