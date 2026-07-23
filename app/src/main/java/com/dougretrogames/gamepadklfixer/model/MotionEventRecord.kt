@@ -1,16 +1,19 @@
 package com.dougretrogames.gamepadklfixer.model
 
+import android.os.Parcelable
 import android.view.MotionEvent
+import kotlinx.parcelize.Parcelize
 
 /**
  * Captures axis values from a MotionEvent for diagnostics.
  */
+@Parcelize
 data class MotionEventRecord(
     val deviceId: Int,
     val source: Int,
     val axisValues: Map<Int, Float>,
     val timestamp: Long = System.currentTimeMillis()
-) {
+) : Parcelable {
     companion object {
         val GAMEPAD_AXES = listOf(
             MotionEvent.AXIS_X,

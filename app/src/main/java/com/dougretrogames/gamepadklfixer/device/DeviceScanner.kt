@@ -15,18 +15,19 @@ object DeviceScanner {
      */
     fun scanGamepads(): List<GamepadDevice> {
         val ids = InputDevice.getDeviceIds()
-        return ids.mapNotNull { id ->
-            val device = InputDevice.getDevice(id) ?: return@mapNotNull null
-            if (!isGamepad(device)) return@mapNotNull null
-            GamepadDevice(
-                id = device.id,
-                name = device.name ?: "Unknown Device",
-                vendorId = device.vendorId,
-                productId = device.productId,
-                sources = device.sources,
-                descriptor = device.descriptor
-            )
-        }
+        return ids.map { id ->
+            val device = InputDevice.getDevice(id)
+            if (device != null && isGamepad(device)) {
+                GamepadDevice(
+                    id = device.id,
+                    name = device.name ?: "Unknown Device",
+                    vendorId = device.vendorId,
+                    productId = device.productId,
+                    sources = device.sources,
+                    descriptor = device.descriptor
+                )
+            } else null
+        }.filterNotNull()
     }
 
     /**
