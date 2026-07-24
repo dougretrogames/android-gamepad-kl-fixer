@@ -43,14 +43,13 @@ jobs:
 
       - name: Rename APK
         run: |
-          cp app/build/outputs/apk/release/app-release.apk GamepadKLFixer-DRG-Release.apk
+          cp app/build/outputs/apk/release/app-release.apk GamepadKLFixer-Release.apk
 
       - name: Definir nome do artefato
         id: vars
-        run: echo "artifact_name=GamepadKLFixer-DRG-Release-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        run: echo "artifact_name=GamepadKLFixer-Release-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.artifact_name }}
-          path: GamepadKLFixer-DRG-Release.apk
+          path: GamepadKLFixer-Release.apk
