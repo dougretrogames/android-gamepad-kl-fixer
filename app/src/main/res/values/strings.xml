@@ -31,4 +31,16 @@
     <string name="kl_updated_count">✨ KL updated with %d captured events</string>
     <string name="no_axis_movement">No axis movement detected</string>
     <string name="no_events_captured">No events captured yet</string>
+
+    <!-- Instructions Dialog -->
+    <string name="instructions_title">How to Use</string>
+    <string name="instructions_content" translate="false">
+1. **Connect** your USB or Bluetooth gamepad.\n\n
+2. **Select** the device from the list on the main screen.\n\n
+3. **Test Input**: Use the "Test Input" button to press all buttons and move sticks. This helps the app identify the correct scan codes.\n\n
+4. **Generate KL**: After testing, tap "Generate KL" to create a custom mapping based on your device.\n\n
+5. **Install**: Use the "Check Root" button, then "Install to /system". Your device will need root access for this step.\n\n
+6. **Reboot**: For the changes to take effect, you must restart your Android device.
+    </string>
+    <string name="instructions_button">Got it!</string>
 </resources>

@@ -31,4 +31,15 @@
     <string name="kl_updated_count">✨ KL actualizado con %d eventos capturados</string>
     <string name="no_axis_movement">No se detectó movimiento de los ejes</string>
     <string name="no_events_captured">Aún no se han capturado eventos</string>
+
+    <string name="instructions_title">Cómo Usar</string>
+    <string name="instructions_content">
+1. **Conecta** tu mando USB o Bluetooth.\n\n
+2. **Selecciona** el dispositivo de la lista en la pantalla principal.\n\n
+3. **Probar Entrada**: Usa el botón "Probar Entrada" para presionar todos los botones y mover los sticks. Esto ayuda a la aplicación a identificar los códigos correctos.\n\n
+4. **Generar KL**: Después de la prueba, toca "Generar KL" para crear un mapeo personalizado para tu mando.\n\n
+5. **Instalar**: Usa el botón "Verificar Root" y luego "Instalar en /system". Tu dispositivo necesitará acceso Root para este paso.\n\n
+6. **Reiniciar**: Para que los cambios surtan efecto, debes reiniciar tu dispositivo Android.
+    </string>
+    <string name="instructions_button">¡Entendido!</string>
 </resources>

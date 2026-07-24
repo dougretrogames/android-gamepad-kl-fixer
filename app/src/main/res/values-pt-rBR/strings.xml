@@ -31,4 +31,15 @@
     <string name="kl_updated_count">✨ KL atualizado com %d eventos capturados</string>
     <string name="no_axis_movement">Nenhum movimento de eixo detectado</string>
     <string name="no_events_captured">Nenhum evento capturado ainda</string>
+
+    <string name="instructions_title">Como Usar</string>
+    <string name="instructions_content">
+1. **Conecte** seu gamepad USB ou Bluetooth.\n\n
+2. **Selecione** o dispositivo na lista da tela principal.\n\n
+3. **Testar Entrada**: Use o botão "Testar Entrada" para pressionar todos os botões e mover os analógicos. Isso ajuda o app a identificar os códigos reais.\n\n
+4. **Gerar KL**: Após testar, toque em "Gerar KL" para criar um mapeamento personalizado para seu controle.\n\n
+5. **Instalar**: Use o botão "Verificar Root" e depois "Instalar no /system". Seu dispositivo precisa de acesso Root para este passo.\n\n
+6. **Reiniciar**: Para que as mudanças tenham efeito, você deve reiniciar o seu dispositivo Android.
+    </string>
+    <string name="instructions_button">Entendi!</string>
 </resources>

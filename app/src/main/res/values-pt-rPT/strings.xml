@@ -31,4 +31,15 @@
     <string name="kl_updated_count">✨ KL atualizado com %d eventos capturados</string>
     <string name="no_axis_movement">Nenhum movimento de eixo detetado</string>
     <string name="no_events_captured">Nenhum evento capturado ainda</string>
+
+    <string name="instructions_title">Como Utilizar</string>
+    <string name="instructions_content">
+1. **Ligue** o seu comando USB ou Bluetooth.\n\n
+2. **Selecione** o dispositivo na lista do ecrã principal.\n\n
+3. **Testar Entrada**: Utilize o botão "Testar Entrada" para premir todos os botões e mover os analógicos. Isto ajuda a app a identificar os códigos reais.\n\n
+4. **Gerar KL**: Após testar, toque em "Gerar KL" para criar um mapeamento personalizado para o seu comando.\n\n
+5. **Instalar**: Utilize o botão "Verificar Root" e depois "Instalar no /system". O seu dispositivo necessita de acesso Root para este passo.\n\n
+6. **Reiniciar**: Para que as mudanças tenham efeito, deve reiniciar o seu dispositivo Android.
+    </string>
+    <string name="instructions_button">Entendi!</string>
 </resources>
