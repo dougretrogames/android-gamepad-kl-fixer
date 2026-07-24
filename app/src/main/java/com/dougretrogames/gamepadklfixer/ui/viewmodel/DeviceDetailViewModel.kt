@@ -28,6 +28,9 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
     private val _isRooted = MutableLiveData<Boolean>(false)
     val isRooted: LiveData<Boolean> = _isRooted
 
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
     fun loadDevice(deviceId: Int) {
         val inputDevice = InputDevice.getDevice(deviceId) ?: return
         val gamepad = GamepadDevice(
@@ -47,6 +50,10 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         generatePreview(device)
     }
 
+    fun setKlPreview(content: String) {
+        _klPreview.value = content
+    }
+
     private fun generatePreview(device: GamepadDevice) {
         val content = KlFileGenerator.generateDefault(device)
         _klPreview.value = content
@@ -61,12 +68,14 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
 
     fun checkRoot() {
         viewModelScope.launch {
+            _isLoading.value = true
             val result = RootManager.checkRootAccess()
             _isRooted.value = result.success && result.output.contains("uid=0")
             _statusMessage.value = if (_isRooted.value == true)
                 getApplication<Application>().getString(R.string.root_access_confirmed)
             else
                 getApplication<Application>().getString(R.string.root_not_available, result.error.ifEmpty { result.output })
+            _isLoading.value = false
         }
     }
 
@@ -87,11 +96,11 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         val dev = _device.value ?: return
         val content = _klPreview.value ?: return
         viewModelScope.launch {
+            _isLoading.value = true
+            _statusMessage.value = getApplication<Application>().getString(R.string.loading_install)
             try {
                 val file = KlFileStorage.saveKlFile(getApplication(), dev, content)
-                // Backup existing
                 val backupResult = RootManager.backupKlFile(dev.klFileName)
-                // Install
                 val installResult = RootManager.installKlFile(file, dev.klFileName)
                 _statusMessage.value = if (installResult.success) {
                     getApplication<Application>().getString(R.string.installed_success, dev.klFileName, backupResult.output)
@@ -101,18 +110,26 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
             } catch (e: Exception) {
                 _statusMessage.value = getApplication<Application>().getString(R.string.error_generic, e.message)
             }
+            _isLoading.value = false
         }
     }
 
     fun restoreKlFile() {
         val dev = _device.value ?: return
         viewModelScope.launch {
-            val result = RootManager.restoreKlFile(dev.klFileName)
-            _statusMessage.value = if (result.success) {
-                getApplication<Application>().getString(R.string.restored_success, dev.klFileName)
-            } else {
-                getApplication<Application>().getString(R.string.restore_failed, result.error.ifEmpty { result.output })
+            _isLoading.value = true
+            _statusMessage.value = getApplication<Application>().getString(R.string.loading_restore)
+            try {
+                val result = RootManager.restoreKlFile(dev.klFileName)
+                _statusMessage.value = if (result.success) {
+                    getApplication<Application>().getString(R.string.restored_success, dev.klFileName)
+                } else {
+                    getApplication<Application>().getString(R.string.restore_failed, result.error.ifEmpty { result.output })
+                }
+            } catch (e: Exception) {
+                _statusMessage.value = getApplication<Application>().getString(R.string.error_generic, e.message)
             }
+            _isLoading.value = false
         }
     }
 }

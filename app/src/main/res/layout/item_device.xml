@@ -2,12 +2,14 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     app:cardElevation="2dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:contentDescription="@string/device_detail">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,14 +21,16 @@
             android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleSmall" />
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            tools:text="Device Name" />
 
         <TextView
             android:id="@+id/tvIds"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceBodySmall"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="2dp"
+            tools:text="Vendor: 0x045E  Product: 0x028E" />
 
         <TextView
             android:id="@+id/tvKlFile"
@@ -34,6 +38,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
             android:textSize="11sp"
-            android:textColor="@color/teal_700" />
+            android:textColor="@color/teal_700"
+            tools:text="Vendor_045E_Product_028E.kl" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

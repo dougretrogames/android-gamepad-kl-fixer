@@ -63,22 +63,29 @@ class TestInputActivity : AppCompatActivity() {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (isGamepadEvent(event)) {
-            return viewModel.onKeyEvent(event)
+            return true
         }
         return super.onKeyUp(keyCode, event)
     }
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK
-            || event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD) {
+        if (isGamepadMotionEvent(event)) {
             return viewModel.onMotionEvent(event)
         }
         return super.onGenericMotionEvent(event)
     }
 
     private fun isGamepadEvent(event: KeyEvent): Boolean {
+        if (event.deviceId != targetDeviceId) return false
         val device = InputDevice.getDevice(event.deviceId) ?: return false
         return DeviceScanner.isGamepad(device)
+    }
+
+    private fun isGamepadMotionEvent(event: MotionEvent): Boolean {
+        if (event.deviceId != targetDeviceId) return false
+        val sources = event.source
+        return (sources and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK
+                || sources and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD)
     }
 
     private fun generateKlFromCapture() {

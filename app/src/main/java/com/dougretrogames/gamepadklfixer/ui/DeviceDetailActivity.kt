@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.dougretrogames.gamepadklfixer.R
@@ -12,6 +13,7 @@ import com.dougretrogames.gamepadklfixer.databinding.ActivityDeviceDetailBinding
 import com.dougretrogames.gamepadklfixer.device.DeviceScanner
 import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.DeviceDetailViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class DeviceDetailActivity : AppCompatActivity() {
 
@@ -64,7 +66,7 @@ class DeviceDetailActivity : AppCompatActivity() {
         }
 
         viewModel.klPreview.observe(this) { content ->
-            binding.tvKlPreview.text = content
+            binding.tvKlPreview.setText(content)
         }
 
         viewModel.statusMessage.observe(this) { msg ->
@@ -73,19 +75,59 @@ class DeviceDetailActivity : AppCompatActivity() {
         }
 
         viewModel.isRooted.observe(this) { rooted ->
-            binding.btnInstall.isEnabled = rooted
-            binding.btnRestore.isEnabled = rooted
+            binding.btnInstall.isEnabled = rooted && !(viewModel.isLoading.value ?: false)
+            binding.btnRestore.isEnabled = rooted && !(viewModel.isLoading.value ?: false)
+        }
+
+        viewModel.isLoading.observe(this) { loading ->
+            binding.btnInstall.isEnabled = (viewModel.isRooted.value ?: false) && !loading
+            binding.btnRestore.isEnabled = (viewModel.isRooted.value ?: false) && !loading
+            binding.btnSaveLocal.isEnabled = !loading
+            binding.btnCheckRoot.isEnabled = !loading
         }
 
         binding.btnCheckRoot.setOnClickListener { viewModel.checkRoot() }
-        binding.btnSaveLocal.setOnClickListener { viewModel.saveKlFile() }
-        binding.btnInstall.setOnClickListener { viewModel.installKlFile() }
-        binding.btnRestore.setOnClickListener { viewModel.restoreKlFile() }
+        binding.btnSaveLocal.setOnClickListener {
+            viewModel.setKlPreview(binding.tvKlPreview.text.toString())
+            viewModel.saveKlFile()
+            Snackbar.make(binding.root, R.string.save_local, Snackbar.LENGTH_SHORT).show()
+        }
+        binding.btnInstall.setOnClickListener { confirmInstall() }
+        binding.btnRestore.setOnClickListener { confirmRestore() }
         binding.btnTestInput.setOnClickListener {
             val intent = Intent(this, TestInputActivity::class.java)
                 .putExtra(EXTRA_DEVICE_ID, deviceId)
             testInputLauncher.launch(intent)
         }
+    }
+
+    private fun confirmInstall() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.confirm_install_title)
+            .setMessage(R.string.confirm_install_message)
+            .setPositiveButton(R.string.confirm_yes) { _, _ ->
+                viewModel.setKlPreview(binding.tvKlPreview.text.toString())
+                viewModel.installKlFile()
+                Snackbar.make(binding.root, R.string.loading_install, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.confirm_no) { }
+                    .show()
+            }
+            .setNegativeButton(R.string.confirm_no, null)
+            .show()
+    }
+
+    private fun confirmRestore() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.confirm_restore_title)
+            .setMessage(R.string.confirm_restore_message)
+            .setPositiveButton(R.string.confirm_yes) { _, _ ->
+                viewModel.restoreKlFile()
+                Snackbar.make(binding.root, R.string.loading_restore, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.confirm_no) { }
+                    .show()
+            }
+            .setNegativeButton(R.string.confirm_no, null)
+            .show()
     }
 
     override fun onSupportNavigateUp(): Boolean {

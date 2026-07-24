@@ -20,6 +20,7 @@ class TestInputViewModel : ViewModel() {
     val lastAxis: LiveData<Map<Int, Float>> = _lastAxis
 
     fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.action != KeyEvent.ACTION_DOWN) return true
         val record = KeyEventRecord(
             keyCode = event.keyCode,
             scanCode = event.scanCode,
@@ -28,7 +29,7 @@ class TestInputViewModel : ViewModel() {
             metaState = event.metaState
         )
         val current = _keyEvents.value?.toMutableList() ?: mutableListOf()
-        current.add(0, record) // prepend so newest is first
+        current.add(0, record)
         if (current.size > 50) current.removeAt(current.size - 1)
         _keyEvents.value = current
         return true

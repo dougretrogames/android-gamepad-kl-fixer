@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -41,7 +42,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:text="Device Name" />
+                        tools:text="Device Name" />
                     <TextView android:id="@+id/tvVendorId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -73,14 +74,19 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:background="#F5F5F5">
-                <TextView
+                android:background="@color/kl_preview_bg_light">
+                <EditText
                     android:id="@+id/tvKlPreview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:padding="8dp"
-                    android:textSize="11sp" />
+                    android:textSize="11sp"
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:gravity="top|start"
+                    android:hint="@string/kl_preview"
+                    android:background="@android:color/transparent"
+                    android:importantForAutofill="no" />
             </ScrollView>
 
             <TextView
@@ -89,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
-                android:background="#E8F5E9"
+                android:background="@color/status_bg_light"
                 android:visibility="gone" />
 
             <LinearLayout
