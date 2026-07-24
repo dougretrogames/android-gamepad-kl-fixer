@@ -42,4 +42,8 @@
 6. **Reiniciar**: Para que as mudanças tenham efeito, deve reiniciar o seu dispositivo Android.
     </string>
     <string name="instructions_button">Entendi!</string>
+
+    <string name="root_required_title">Acesso Root Necessário</string>
+    <string name="root_required_message">O acesso Root não foi detetado ou foi negado. \n\nO Root é obrigatório para instalar ficheiros .kl na partição do sistema. Sem ele, poderá apenas <b>Testar Entradas</b>, mas não conseguirá aplicar as correções.</string>
+    <string name="root_check_button">Continuar sem Root</string>
 </resources>

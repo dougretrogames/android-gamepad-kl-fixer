@@ -43,4 +43,9 @@
 6. **Reboot**: For the changes to take effect, you must restart your Android device.
     </string>
     <string name="instructions_button">Got it!</string>
+
+    <!-- Root Check -->
+    <string name="root_required_title">Root Access Required</string>
+    <string name="root_required_message">Root access was not detected or was denied. \n\nThis is required to install .kl files into the system partition. Without root, you can still use the app to <b>Test Inputs</b>, but you won\'t be able to apply changes.</string>
+    <string name="root_check_button">Continue without Root</string>
 </resources>

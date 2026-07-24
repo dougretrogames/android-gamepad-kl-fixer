@@ -13,6 +13,9 @@ import com.dougretrogames.gamepadklfixer.R
 import com.dougretrogames.gamepadklfixer.databinding.ActivityMainBinding
 import com.dougretrogames.gamepadklfixer.model.GamepadDevice
 import com.dougretrogames.gamepadklfixer.ui.adapter.DeviceAdapter
+import androidx.lifecycle.lifecycleScope
+import com.dougretrogames.gamepadklfixer.root.RootManager
+import kotlinx.coroutines.launch
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.DeviceListViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -44,7 +47,39 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.refresh()
-        showInstructionsIfNeeded()
+        checkRootAndInstructions()
+    }
+
+    private fun checkRootAndInstructions() {
+        lifecycleScope.launch {
+            val rootResult = RootManager.checkRootAccess()
+            val isRooted = rootResult.success && rootResult.output.contains("uid=0")
+            
+            if (!isRooted) {
+                showRootWarningDialog()
+            } else {
+                showInstructionsIfNeeded()
+            }
+        }
+    }
+
+    private fun showRootWarningDialog() {
+        val content = getString(R.string.root_required_message)
+        val styledContent = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            android.text.Html.fromHtml(content, android.text.Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            @Suppress("DEPRECATION")
+            android.text.Html.fromHtml(content)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.root_required_title)
+            .setMessage(styledContent)
+            .setPositiveButton(R.string.root_check_button) { _, _ ->
+                showInstructionsIfNeeded()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun showInstructionsIfNeeded() {

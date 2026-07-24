@@ -42,4 +42,8 @@
 6. **Reiniciar**: Para que los cambios surtan efecto, debes reiniciar tu dispositivo Android.
     </string>
     <string name="instructions_button">¡Entendido!</string>
+
+    <string name="root_required_title">Acceso Root Necesario</string>
+    <string name="root_required_message">No se detectó el acceso Root o fue denegado. \n\nEl Root é obligatorio para instalar archivos .kl en la partición del sistema. Sin él, solo podrá <b>Probar Entradas</b>, pero no podrá aplicar las correcciones.</string>
+    <string name="root_check_button">Continuar sin Root</string>
 </resources>
