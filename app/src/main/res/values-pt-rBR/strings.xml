@@ -16,7 +16,7 @@
     <string name="restore_backup">Restaurar Backup (root)</string>
     <string name="vendor_id_label">ID do Fabricante: 0x%1$s (%2$d)</string>
     <string name="product_id_label">ID do Produto: 0x%1$s (%2$d)</string>
-    <string name="kl_file_label">Arquivo KL: %s</string>
+    <string name="kl_file_label">Arquivo KL: %1$s</string>
     <string name="sources_label">Fontes: %s</string>
     <string name="descriptor_label">Descritor: %s</string>
     <string name="root_access_confirmed">✅ Acesso root confirmado</string>
