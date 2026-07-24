@@ -15,7 +15,7 @@
     <string name="install_system">Instalar en /system (root)</string>
     <string name="restore_backup">Restaurar Copia de Seguridad (root)</string>
     <string name="vendor_id_label">ID del Fabricante: 0x%1$s (%2$d)</string>
-    <string name="product_id_label">ID del Producto: 0x%1$s (%2$d)</string>
+    <string name="product_id_label">ID del Produto: 0x%1$s (%2$d)</string>
     <string name="kl_file_label">Archivo KL: %s</string>
     <string name="sources_label">Fuentes: %s</string>
     <string name="descriptor_label">Descriptor: %s</string>
@@ -34,16 +34,15 @@
 
     <string name="instructions_title">Cómo Usar</string>
     <string name="instructions_content">
-1. **Conecta** tu mando USB o Bluetooth.\n\n
-2. **Selecciona** el dispositivo de la lista en la pantalla principal.\n\n
-3. **Probar Entrada**: Usa el botón "Probar Entrada" para presionar todos los botones y mover los sticks. Esto ayuda a la aplicación a identificar los códigos correctos.\n\n
-4. **Generar KL**: Después de la prueba, toca "Generar KL" para crear un mapeo personalizado para tu mando.\n\n
-5. **Instalar**: Usa el botón "Verificar Root" y luego "Instalar en /system". Tu dispositivo necesitará acceso Root para este paso.\n\n
-6. **Reiniciar**: Para que los cambios surtan efecto, debes reiniciar tu dispositivo Android.
+        &lt;b&gt;1. Conectar&lt;/b&gt;&lt;br/&gt;Conecta tu mando USB o Bluetooth.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;2. Seleccionar&lt;/b&gt;&lt;br/&gt;Elige el dispositivo de la lista principal.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;3. Probar Entrada&lt;/b&gt;&lt;br/&gt;Presiona botones y mueve los sticks.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;4. Generar KL&lt;/b&gt;&lt;br/&gt;Toca "Generar KL" para crear el mapeo.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;5. Instalar&lt;/b&gt;&lt;br/&gt;Verifica el Root e instala. Es necesario reiniciar.
     </string>
     <string name="instructions_button">¡Entendido!</string>
 
     <string name="root_required_title">Acceso Root Necesario</string>
-    <string name="root_required_message">No se detectó el acceso Root o fue denegado. \n\nEl Root é obligatorio para instalar archivos .kl en la partición del sistema. Sin él, solo podrá <b>Probar Entradas</b>, pero no podrá aplicar las correcciones.</string>
+    <string name="root_required_message">No se detectó acceso Root. &lt;br/&gt;&lt;br/&gt;Necesario para instalar archivos. Aún puedes &lt;b&gt;Probar Entradas&lt;/b&gt;.</string>
     <string name="root_check_button">Continuar sin Root</string>
 </resources>

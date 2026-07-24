@@ -34,16 +34,15 @@
 
     <string name="instructions_title">Como Usar</string>
     <string name="instructions_content">
-1. **Conecte** seu gamepad USB ou Bluetooth.\n\n
-2. **Selecione** o dispositivo na lista da tela principal.\n\n
-3. **Testar Entrada**: Use o botão "Testar Entrada" para pressionar todos os botões e mover os analógicos. Isso ajuda o app a identificar os códigos reais.\n\n
-4. **Gerar KL**: Após testar, toque em "Gerar KL" para criar um mapeamento personalizado para seu controle.\n\n
-5. **Instalar**: Use o botão "Verificar Root" e depois "Instalar no /system". Seu dispositivo precisa de acesso Root para este passo.\n\n
-6. **Reiniciar**: Para que as mudanças tenham efeito, você deve reiniciar o seu dispositivo Android.
+        &lt;b&gt;1. Conectar&lt;/b&gt;&lt;br/&gt;Ligue seu gamepad USB ou Bluetooth.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;2. Selecionar&lt;/b&gt;&lt;br/&gt;Escolha o dispositivo na lista principal.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;3. Testar Entrada&lt;/b&gt;&lt;br/&gt;Pressione botões e mova os analógicos.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;4. Gerar KL&lt;/b&gt;&lt;br/&gt;Toque em "Gerar KL" para criar o mapeamento.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;5. Instalar&lt;/b&gt;&lt;br/&gt;Verifique o Root e instale. É necessário reiniciar.
     </string>
     <string name="instructions_button">Entendi!</string>
 
     <string name="root_required_title">Acesso Root Necessário</string>
-    <string name="root_required_message">O acesso Root não foi detectado ou foi negado. \n\nO Root é obrigatório para instalar arquivos .kl na partição do sistema. Sem ele, você poderá apenas <b>Testar Entradas</b>, mas não conseguirá aplicar as correções.</string>
+    <string name="root_required_message">O acesso Root não foi detectado. &lt;br/&gt;&lt;br/&gt;Necessário para instalar arquivos. Você ainda pode &lt;b&gt;Testar Entradas&lt;/b&gt;.</string>
     <string name="root_check_button">Continuar sem Root</string>
 </resources>

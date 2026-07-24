@@ -35,17 +35,16 @@
     <!-- Instructions Dialog -->
     <string name="instructions_title">How to Use</string>
     <string name="instructions_content" translate="false">
-1. **Connect** your USB or Bluetooth gamepad.\n\n
-2. **Select** the device from the list on the main screen.\n\n
-3. **Test Input**: Use the "Test Input" button to press all buttons and move sticks. This helps the app identify the correct scan codes.\n\n
-4. **Generate KL**: After testing, tap "Generate KL" to create a custom mapping based on your device.\n\n
-5. **Install**: Use the "Check Root" button, then "Install to /system". Your device will need root access for this step.\n\n
-6. **Reboot**: For the changes to take effect, you must restart your Android device.
+        &lt;b&gt;1. Connect&lt;/b&gt;&lt;br/&gt;Plug in your USB or Bluetooth gamepad.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;2. Select&lt;/b&gt;&lt;br/&gt;Choose your device from the list.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;3. Test Input&lt;/b&gt;&lt;br/&gt;Press buttons and move sticks to capture scan codes.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;4. Generate KL&lt;/b&gt;&lt;br/&gt;Tap "Generate KL" to create the mapping.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;5. Install&lt;/b&gt;&lt;br/&gt;Check Root and install. Device reboot required.
     </string>
     <string name="instructions_button">Got it!</string>
 
     <!-- Root Check -->
     <string name="root_required_title">Root Access Required</string>
-    <string name="root_required_message">Root access was not detected or was denied. \n\nThis is required to install .kl files into the system partition. Without root, you can still use the app to <b>Test Inputs</b>, but you won\'t be able to apply changes.</string>
+    <string name="root_required_message">Root access not detected. &lt;br/&gt;&lt;br/&gt;Required to install files. You can still &lt;b&gt;Test Inputs&lt;/b&gt;.</string>
     <string name="root_check_button">Continue without Root</string>
 </resources>

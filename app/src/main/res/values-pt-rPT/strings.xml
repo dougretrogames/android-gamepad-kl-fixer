@@ -34,16 +34,15 @@
 
     <string name="instructions_title">Como Utilizar</string>
     <string name="instructions_content">
-1. **Ligue** o seu comando USB ou Bluetooth.\n\n
-2. **Selecione** o dispositivo na lista do ecrã principal.\n\n
-3. **Testar Entrada**: Utilize o botão "Testar Entrada" para premir todos os botões e mover os analógicos. Isto ajuda a app a identificar os códigos reais.\n\n
-4. **Gerar KL**: Após testar, toque em "Gerar KL" para criar um mapeamento personalizado para o seu comando.\n\n
-5. **Instalar**: Utilize o botão "Verificar Root" e depois "Instalar no /system". O seu dispositivo necessita de acesso Root para este passo.\n\n
-6. **Reiniciar**: Para que as mudanças tenham efeito, deve reiniciar o seu dispositivo Android.
+        &lt;b&gt;1. Ligar&lt;/b&gt;&lt;br/&gt;Ligue o seu comando USB ou Bluetooth.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;2. Selecionar&lt;/b&gt;&lt;br/&gt;Escolha o dispositivo na lista principal.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;3. Testar Entrada&lt;/b&gt;&lt;br/&gt;Prima botões e mova os analógicos.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;4. Gerar KL&lt;/b&gt;&lt;br/&gt;Toque em "Gerar KL" para criar o mapeamento.&lt;br/&gt;&lt;br/&gt;
+        &lt;b&gt;5. Instalar&lt;/b&gt;&lt;br/&gt;Verifique o Root e instale. É necessário reiniciar.
     </string>
     <string name="instructions_button">Entendi!</string>
 
     <string name="root_required_title">Acesso Root Necessário</string>
-    <string name="root_required_message">O acesso Root não foi detetado ou foi negado. \n\nO Root é obrigatório para instalar ficheiros .kl na partição do sistema. Sem ele, poderá apenas <b>Testar Entradas</b>, mas não conseguirá aplicar as correções.</string>
+    <string name="root_required_message">O acesso Root não foi detetado. &lt;br/&gt;&lt;br/&gt;Necessário para instalar ficheiros. Ainda pode &lt;b&gt;Testar Entradas&lt;/b&gt;.</string>
     <string name="root_check_button">Continuar sem Root</string>
 </resources>
