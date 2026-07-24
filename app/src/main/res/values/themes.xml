@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/blue_200</item>
+        <item name="colorOnPrimaryContainer">@color/blue_700</item>
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorTertiary">@color/blue_accent</item>
         <item name="android:statusBarColor">@color/blue_700</item>

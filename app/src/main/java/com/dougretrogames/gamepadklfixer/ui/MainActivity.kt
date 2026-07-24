@@ -2,9 +2,9 @@ package com.dougretrogames.gamepadklfixer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.text.method.LinkMovementMethod
 import android.view.View
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         binding.navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_instructions -> showInstructionsDialog()
-                R.id.nav_home -> { /* já estamos na home */ }
+                R.id.nav_about -> showAboutDialog()
             }
             binding.drawerLayout.closeDrawers()
             true
@@ -131,21 +131,32 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun showAboutDialog() {
+        val versionName = packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0.0"
+        val message = buildString {
+            appendLine(getString(R.string.about_creator))
+            appendLine()
+            appendLine(getString(R.string.about_license))
+            appendLine()
+            appendLine(getString(R.string.about_github))
+            appendLine()
+            appendLine(getString(R.string.about_version, versionName))
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.about_title)
+            .setMessage(message)
+            .setPositiveButton(R.string.about_close, null)
+            .setCancelable(true)
+            .show()
+
+        val messageView = dialog.findViewById<TextView>(android.R.id.message)
+        messageView?.movementMethod = LinkMovementMethod.getInstance()
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.refresh()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_refresh -> { viewModel.refresh(); true }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onBackPressed() {

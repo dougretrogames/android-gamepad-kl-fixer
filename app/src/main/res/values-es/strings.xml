@@ -1,8 +1,14 @@
 <resources>
 <string name="app_name">Gamepad KL Fixer</string>
 <string name="nav_subtitle">Diagnóstico e instalador de KeyLayout</string>
-<string name="nav_home">Inicio</string>
 <string name="nav_instructions">Instrucciones</string>
+<string name="nav_about">Sobre la App</string>
+<string name="about_title">Sobre Gamepad KL Fixer</string>
+<string name="about_creator">Creado por: Doug Retro Games</string>
+<string name="about_license">Licencia: MIT</string>
+<string name="about_github">GitHub: https://github.com/dougretrogames/android-gamepad-kl-fixer</string>
+<string name="about_version">Versión: %1$s</string>
+<string name="about_close">Cerrar</string>
 <string name="root_warning_dont_show">No mostrar de nuevo</string>
 <string name="device_detail">Detalle del Dispositivo</string>
     <string name="test_input">Probar Entrada</string>
