@@ -31,6 +31,12 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _installSuccess = MutableLiveData<Boolean>(false)
+    val installSuccess: LiveData<Boolean> = _installSuccess
+
+    private val _restoreSuccess = MutableLiveData<Boolean>(false)
+    val restoreSuccess: LiveData<Boolean> = _restoreSuccess
+
     fun loadDevice(deviceId: Int) {
         val inputDevice = InputDevice.getDevice(deviceId) ?: return
         val gamepad = GamepadDevice(
@@ -103,6 +109,7 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
                 val backupResult = RootManager.backupKlFile(dev.klFileName)
                 val installResult = RootManager.installKlFile(file, dev.klFileName)
                 _statusMessage.value = if (installResult.success) {
+                    _installSuccess.value = true
                     getApplication<Application>().getString(R.string.installed_success, dev.klFileName, backupResult.output)
                 } else {
                     getApplication<Application>().getString(R.string.install_failed, installResult.error)
@@ -122,6 +129,7 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
             try {
                 val result = RootManager.restoreKlFile(dev.klFileName)
                 _statusMessage.value = if (result.success) {
+                    _restoreSuccess.value = true
                     getApplication<Application>().getString(R.string.restored_success, dev.klFileName)
                 } else {
                     getApplication<Application>().getString(R.string.restore_failed, result.error.ifEmpty { result.output })

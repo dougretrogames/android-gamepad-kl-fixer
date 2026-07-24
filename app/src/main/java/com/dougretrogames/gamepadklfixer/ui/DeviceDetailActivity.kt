@@ -13,7 +13,9 @@ import com.dougretrogames.gamepadklfixer.databinding.ActivityDeviceDetailBinding
 import com.dougretrogames.gamepadklfixer.device.DeviceScanner
 import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
 import com.dougretrogames.gamepadklfixer.ui.viewmodel.DeviceDetailViewModel
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class DeviceDetailActivity : AppCompatActivity() {
 
@@ -86,6 +88,14 @@ class DeviceDetailActivity : AppCompatActivity() {
             binding.btnCheckRoot.isEnabled = !loading
         }
 
+        viewModel.installSuccess.observe(this) { success ->
+            if (success) showRebootPrompt()
+        }
+
+        viewModel.restoreSuccess.observe(this) { success ->
+            if (success) showRebootPrompt()
+        }
+
         binding.btnCheckRoot.setOnClickListener { viewModel.checkRoot() }
         binding.btnSaveLocal.setOnClickListener {
             viewModel.setKlPreview(binding.tvKlPreview.text.toString())
@@ -127,6 +137,27 @@ class DeviceDetailActivity : AppCompatActivity() {
                     .show()
             }
             .setNegativeButton(R.string.confirm_no, null)
+            .show()
+    }
+
+    private fun showRebootPrompt() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.reboot_title)
+            .setMessage(R.string.reboot_message)
+            .setPositiveButton(R.string.reboot_now) { _, _ ->
+                lifecycleScope.launch {
+                    val result = com.dougretrogames.gamepadklfixer.root.RootManager.reboot()
+                    if (!result.success) {
+                        android.widget.Toast.makeText(
+                            this@DeviceDetailActivity,
+                            getString(R.string.reboot_failed, result.error.ifEmpty { result.output }),
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+            .setNegativeButton(R.string.reboot_later, null)
+            .setCancelable(true)
             .show()
     }
 

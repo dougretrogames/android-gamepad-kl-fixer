@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_instructions -> showInstructionsDialog()
                 R.id.nav_about -> showAboutDialog()
+                R.id.nav_reboot -> showRebootDialog()
             }
             binding.drawerLayout.closeDrawers()
             true
@@ -157,6 +158,29 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refresh()
+    }
+
+    private fun showRebootDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.reboot_title)
+            .setMessage(R.string.reboot_message)
+            .setPositiveButton(R.string.reboot_now) { _, _ -> performReboot() }
+            .setNegativeButton(R.string.reboot_later, null)
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun performReboot() {
+        lifecycleScope.launch {
+            val result = RootManager.reboot()
+            if (!result.success) {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle(R.string.reboot_title)
+                    .setMessage(getString(R.string.reboot_failed, result.error.ifEmpty { result.output }))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+        }
     }
 
     override fun onBackPressed() {

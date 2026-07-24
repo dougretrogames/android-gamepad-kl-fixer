@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Paleta azul moderna (Material 3 tonal) -->
-    <color name="blue_200">#B3E5FC</color>
-    <color name="blue_500">#039BE5</color>
-    <color name="blue_700">#0277BD</color>
-    <color name="teal_200">#80DEEA</color>
-    <color name="teal_700">#00838F</color>
+    <!-- Paleta azul (tom principal #3198A8) -->
+    <color name="blue_200">#B2DFDB</color>
+    <color name="blue_500">#3198A8</color>
+    <color name="blue_700">#246E7C</color>
+    <color name="teal_200">#80CBC4</color>
+    <color name="teal_700">#00796B</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background_dark">#121212</color>

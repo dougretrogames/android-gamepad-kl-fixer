@@ -111,6 +111,15 @@ object RootManager {
     }
 
     /**
+     * Reboots the device. Requires root.
+     * Android only reloads KeyLayout files during boot, so a reboot is required
+     * after installing/restoring a .kl file for changes to take effect.
+     */
+    suspend fun reboot(): RootResult = withContext(Dispatchers.IO) {
+        runSuCommand("sync\nreboot")
+    }
+
+    /**
      * Executes one or more shell commands as root via `su -c`.
      * Multiple commands can be separated by newlines.
      */
