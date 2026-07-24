@@ -41,8 +41,16 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
+      - name: Rename APK
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk GamepadKLFixer-DRG-Release.apk
+
+      - name: Definir nome do artefato
+        id: vars
+        run: echo "artifact_name=GamepadKLFixer-DRG-Release-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          name: ${{ steps.vars.outputs.artifact_name }}
+          path: GamepadKLFixer-DRG-Release.apk
