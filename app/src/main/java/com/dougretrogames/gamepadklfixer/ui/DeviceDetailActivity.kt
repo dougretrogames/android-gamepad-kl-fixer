@@ -88,6 +88,10 @@ class DeviceDetailActivity : AppCompatActivity() {
             binding.btnCheckRoot.isEnabled = !loading
         }
 
+        viewModel.saveSuccess.observe(this) { success ->
+            if (success) showRebootPrompt()
+        }
+
         viewModel.installSuccess.observe(this) { success ->
             if (success) showRebootPrompt()
         }

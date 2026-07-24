@@ -34,6 +34,9 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
     private val _installSuccess = MutableLiveData<Boolean>(false)
     val installSuccess: LiveData<Boolean> = _installSuccess
 
+    private val _saveSuccess = MutableLiveData<Boolean>(false)
+    val saveSuccess: LiveData<Boolean> = _saveSuccess
+
     private val _restoreSuccess = MutableLiveData<Boolean>(false)
     val restoreSuccess: LiveData<Boolean> = _restoreSuccess
 
@@ -91,6 +94,7 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             try {
                 val file = KlFileStorage.saveKlFile(getApplication(), dev, content)
+                _saveSuccess.value = true
                 _statusMessage.value = getApplication<Application>().getString(R.string.saved_to_storage, file.name)
             } catch (e: Exception) {
                 _statusMessage.value = getApplication<Application>().getString(R.string.save_failed, e.message)
