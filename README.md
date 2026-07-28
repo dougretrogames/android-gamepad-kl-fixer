@@ -1,4 +1,4 @@
-# 🎮 Android Gamepad KL Fixer
+# 🎮 Gamepad KL Fixer
 
 [![minSdk](https://img.shields.io/badge/minSdk-21%20(Android%205.0)-brightgreen)](#)
 [![Kotlin](https://img.shields.io/badge/language-Kotlin-blue)](#)
@@ -137,7 +137,7 @@ android-gamepad-kl-fixer/
 │   ├── src/main/java/com/dougretrogames/gamepadklfixer/
 │   ├── src/main/res/       # Layouts, Ícones (PNG/Adaptive) e Traduções
 │   └── build.gradle.kts
-├── .github/workflows/      # CI/CD (Gradle 8.14.5 + AGP 8.13.0)
+├── .github/workflows/      # CI/CD — android-release.yml (Gradle 8.14.5 + AGP 8.13.0)
 ├── gradle.properties       # Configurações AndroidX
 └── README.md
 ```
@@ -151,7 +151,7 @@ Este projeto está licenciado sob a **Licença MIT**.
 ---
 ---
 
-# 🎮 Android Gamepad KL Fixer (English)
+# 🎮 Gamepad KL Fixer (English)
 
 [![minSdk](https://img.shields.io/badge/minSdk-21%20(Android%205.0)-brightgreen)](#)
 [![Kotlin](https://img.shields.io/badge/language-Kotlin-blue)](#)

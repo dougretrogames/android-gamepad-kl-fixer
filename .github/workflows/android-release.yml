@@ -1,5 +1,4 @@
 name: Android CI/CD
-
 on:
   push:
     branches: [ "main" ]
