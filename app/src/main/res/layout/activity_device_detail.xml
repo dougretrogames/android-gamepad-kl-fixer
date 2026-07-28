@@ -71,6 +71,34 @@
                 android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:layout_marginBottom="4dp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_label"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <RadioGroup
+                android:id="@+id/profileGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+
+                <RadioButton
+                    android:id="@+id/profileGeneric"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_generic" />
+
+                <RadioButton
+                    android:id="@+id/profileOfficial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_official_switch_pro" />
+            </RadioGroup>
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="180dp"

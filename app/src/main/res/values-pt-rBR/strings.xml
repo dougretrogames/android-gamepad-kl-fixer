@@ -47,6 +47,9 @@
     <string name="kl_updated_count">✨ KL atualizado com %d eventos capturados</string>
     <string name="no_axis_movement">Nenhum movimento de eixo detectado</string>
     <string name="no_events_captured">Nenhum evento capturado ainda</string>
+    <string name="profile_label">Perfil de mapeamento</string>
+    <string name="profile_generic">Genérico (gamepad comum)</string>
+    <string name="profile_official_switch_pro">Oficial (Switch Pro / referência)</string>
 
     <string name="instructions_title">Como Usar</string>
     <string name="instructions_content">

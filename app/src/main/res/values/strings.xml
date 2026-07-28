@@ -47,6 +47,9 @@
     <string name="kl_updated_count">✨ KL updated with %d captured events</string>
     <string name="no_axis_movement">No axis movement detected</string>
     <string name="no_events_captured">No events captured yet</string>
+    <string name="profile_label">Mapping profile</string>
+    <string name="profile_generic">Generic (typical off-brand)</string>
+    <string name="profile_official_switch_pro">Official (Switch Pro / reference)</string>
 
     <!-- Instructions Dialog -->
     <string name="instructions_title">How to Use</string>

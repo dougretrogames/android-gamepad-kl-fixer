@@ -97,6 +97,7 @@ class TestInputActivity : AppCompatActivity() {
 
         val resultIntent = Intent().apply {
             putParcelableArrayListExtra(EXTRA_CAPTURED_KEYS, ArrayList(captured))
+            putParcelableArrayListExtra(EXTRA_CAPTURED_MOTIONS, ArrayList(viewModel.getCapturedMotions()))
         }
         setResult(RESULT_OK, resultIntent)
         finish()
@@ -104,6 +105,7 @@ class TestInputActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_CAPTURED_KEYS = "extra_captured_keys"
+        const val EXTRA_CAPTURED_MOTIONS = "extra_captured_motions"
     }
 
     override fun onSupportNavigateUp(): Boolean {

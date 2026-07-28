@@ -11,6 +11,7 @@ import com.dougretrogames.gamepadklfixer.kl.KlFileGenerator
 import com.dougretrogames.gamepadklfixer.kl.KlFileStorage
 import com.dougretrogames.gamepadklfixer.model.GamepadDevice
 import com.dougretrogames.gamepadklfixer.model.KeyEventRecord
+import com.dougretrogames.gamepadklfixer.model.MotionEventRecord
 import com.dougretrogames.gamepadklfixer.root.RootManager
 import kotlinx.coroutines.launch
 
@@ -40,6 +41,9 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
     private val _restoreSuccess = MutableLiveData<Boolean>(false)
     val restoreSuccess: LiveData<Boolean> = _restoreSuccess
 
+    private val _profile = MutableLiveData<KlFileGenerator.Profile>(KlFileGenerator.Profile.GENERIC)
+    val profile: LiveData<KlFileGenerator.Profile> = _profile
+
     fun loadDevice(deviceId: Int) {
         val inputDevice = InputDevice.getDevice(deviceId) ?: return
         val gamepad = GamepadDevice(
@@ -63,14 +67,25 @@ class DeviceDetailViewModel(application: Application) : AndroidViewModel(applica
         _klPreview.value = content
     }
 
+    fun setProfile(profile: KlFileGenerator.Profile) {
+        if (_profile.value == profile) return
+        _profile.value = profile
+        _device.value?.let { generatePreview(it) }
+    }
+
     private fun generatePreview(device: GamepadDevice) {
-        val content = KlFileGenerator.generateDefault(device)
+        val profile = _profile.value ?: KlFileGenerator.Profile.GENERIC
+        val content = KlFileGenerator.generateDefault(device, profile)
         _klPreview.value = content
     }
 
-    fun generatePreviewWithCapturedKeys(capturedKeys: List<KeyEventRecord>) {
+    fun generatePreviewWithCapturedKeys(
+        capturedKeys: List<KeyEventRecord>,
+        capturedMotions: List<MotionEventRecord> = emptyList()
+    ) {
         val dev = _device.value ?: return
-        val content = KlFileGenerator.generateFromCapture(dev, capturedKeys)
+        val profile = _profile.value ?: KlFileGenerator.Profile.GENERIC
+        val content = KlFileGenerator.generateFromCapture(dev, capturedKeys, capturedMotions, profile)
         _klPreview.value = content
         _statusMessage.value = getApplication<Application>().getString(R.string.kl_updated_count, capturedKeys.size)
     }

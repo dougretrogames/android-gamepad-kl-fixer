@@ -52,4 +52,6 @@ class TestInputViewModel : ViewModel() {
     }
 
     fun getCapturedKeys(): List<KeyEventRecord> = _keyEvents.value ?: emptyList()
+
+    fun getCapturedMotions(): List<MotionEventRecord> = _motionEvents.value ?: emptyList()
 }

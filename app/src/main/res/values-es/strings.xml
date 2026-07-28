@@ -47,6 +47,9 @@
     <string name="kl_updated_count">✨ KL actualizado con %d eventos capturados</string>
     <string name="no_axis_movement">No se detectó movimiento de los ejes</string>
     <string name="no_events_captured">Aún no se han capturado eventos</string>
+    <string name="profile_label">Perfil de mapeo</string>
+    <string name="profile_generic">Genérico (mando común)</string>
+    <string name="profile_official_switch_pro">Oficial (Switch Pro / referencia)</string>
 
     <string name="instructions_title">Cómo Usar</string>
     <string name="instructions_content">

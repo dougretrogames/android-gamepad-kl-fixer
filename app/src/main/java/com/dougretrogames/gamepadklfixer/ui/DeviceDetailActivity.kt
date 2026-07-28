@@ -37,8 +37,16 @@ class DeviceDetailActivity : AppCompatActivity() {
                     TestInputActivity.EXTRA_CAPTURED_KEYS,
                     KeyEventRecord::class.java
                 )
+                val capturedMotions = IntentCompat.getParcelableArrayListExtra(
+                    data,
+                    TestInputActivity.EXTRA_CAPTURED_MOTIONS,
+                    com.dougretrogames.gamepadklfixer.model.MotionEventRecord::class.java
+                )
                 if (capturedKeys != null) {
-                    viewModel.generatePreviewWithCapturedKeys(capturedKeys)
+                    viewModel.generatePreviewWithCapturedKeys(
+                        capturedKeys,
+                        capturedMotions ?: arrayListOf()
+                    )
                 }
             }
         }
@@ -101,6 +109,17 @@ class DeviceDetailActivity : AppCompatActivity() {
         }
 
         binding.btnCheckRoot.setOnClickListener { viewModel.checkRoot() }
+        binding.profileGroup.setOnCheckedChangeListener { _, checkedId ->
+            val profile = when (checkedId) {
+                R.id.profileOfficial ->
+                    com.dougretrogames.gamepadklfixer.kl.KlFileGenerator.Profile.OFFICIAL_SWITCH_PRO
+                else ->
+                    com.dougretrogames.gamepadklfixer.kl.KlFileGenerator.Profile.GENERIC
+            }
+            viewModel.setProfile(profile)
+        }
+        // Default selection matches the ViewModel default.
+        binding.profileGeneric.isChecked = true
         binding.btnSaveLocal.setOnClickListener {
             viewModel.setKlPreview(binding.tvKlPreview.text.toString())
             viewModel.saveKlFile()
