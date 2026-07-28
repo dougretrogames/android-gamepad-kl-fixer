@@ -17,10 +17,12 @@ data class KeyEventRecord(
     val timestamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     val keyCodeName: String get() = KeyEvent.keyCodeToString(keyCode)
-    val actionName: String get() = when (action) {
-        KeyEvent.ACTION_DOWN -> "DOWN"
-        KeyEvent.ACTION_UP -> "UP"
-        KeyEvent.ACTION_MULTIPLE -> "MULTIPLE"
-        else -> "UNKNOWN($action)"
-    }
+    val actionName: String
+        @Suppress("DEPRECATION")
+        get() = when (action) {
+            KeyEvent.ACTION_DOWN -> "DOWN"
+            KeyEvent.ACTION_UP -> "UP"
+            KeyEvent.ACTION_MULTIPLE -> "MULTIPLE"
+            else -> "UNKNOWN($action)"
+        }
 }
